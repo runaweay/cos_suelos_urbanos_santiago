@@ -1,7 +1,9 @@
 # cos_suelos_urbanos_santiago
 
-Proyecto final del curso Visualización de datos medioambientales con R.
-Datos simulados a partir de la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile". El muestreo real se hará en primavera-verano 2026-2027.
+> ⚠️ **Todos los datos de este repositorio son simulados!**
+> No provienen de mediciones de terreno ni de laboratorio y fueron generados con el script `scripts/01_simular_datos.R` (semilla fija), con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
+
+Proyecto final del curso *Visualización de datos medioambientales con R*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
 
 ## Estructura
 
@@ -10,12 +12,13 @@ cos_suelos_urbanos_santiago/
 ├── datos/      # tablas en formato ordenado (tidy), una por tipo de dato
 ├── scripts/    # 01_simular_datos.R, 02_eda.R
 ├── figuras/    # salidas del EDA, numeradas 01_, 02_, ...
+├── informe_borrador.qmd   # borrador del proyecto final (storytelling)
 └── README.md
 ```
 
 ## Diccionario de datos
 
-Todas las tablas se unen por `sitio_id`. Fechas en ISO. Datos ausentes = `NA`.
+Todas las tablas se unen por `sitio_id`. Fechas en ISO 8601 (AAAA-MM-DD). Datos ausentes = `NA`.
 
 | Archivo | Una fila = | Variables |
 |---|---|---|
