@@ -1,18 +1,35 @@
 # cos_suelos_urbanos_santiago
 
-> ⚠️ **Todos los datos de este repositorio son simulados!**
-> No provienen de mediciones de terreno ni de laboratorio y fueron generados con el script `scripts/01_simular_datos.R` (semilla fija), con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
+> Todos los datos de este repositorio son simulados!y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
 Proyecto final del curso *Visualización de datos medioambientales con R*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
+
+## Preguntas exploratorias
+
+1. El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
+2. La calidad del manejo y el tipo de cobertura modifican esa relación?
+3. La textura del suelo cambia la respuesta del COS al calor?
+4. La respiración microbiana aumenta con la temperatura y depende de la humedad?
+
+## Cómo reproducir
+
+1. Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`).
+2. Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
+3. Renderizar `scripts/03_informe_borrador.qmd` con Quarto (lee los datos desde `../datos/`).
 
 ## Estructura
 
 ```
 cos_suelos_urbanos_santiago/
 ├── datos/      # tablas en formato ordenado (tidy), una por tipo de dato
-├── scripts/    # 01_simular_datos.R, 02_eda.R
-├── figuras/    # salidas del EDA, numeradas 01_, 02_, ...
-├── informe_borrador.qmd   # borrador del proyecto final (storytelling)
+├── scripts/
+│   ├── 01_simular_datos.R       # genera los datos simulados
+│   ├── 02_eda.R                 # análisis exploratorio y datos ausentes
+│   ├── 03_informe_borrador.qmd  # borrador del proyecto final (storytelling)
+│   └── 03_informe_borrador.html # informe renderizado
+├── figuras/    # salidas exploratorias del EDA, numeradas 01_, 02_, ...
+├── doctorado_cos_suelos_urbanos_santiago.Rproj   # proyecto de RStudio
+├── .gitignore
 └── README.md
 ```
 
