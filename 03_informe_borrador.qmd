@@ -1,0 +1,214 @@
+---
+title: "Las islas de calor influyen en la dinámica del carbono de los suelos urbanos de Santiago?"
+subtitle: "Borrador del proyecto final para el curso de Visualización de datos medioambientales con R"
+author: "Mariana dos Santos Moreno"
+date: 2026-10-21
+lang: es
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-summary: "Ver código"
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+---
+
+::: {.callout-warning}
+## Datos simulados
+
+**Los datos de este proyecto son simulados** con `scripts/01_simular_datos.R`. El objetivo es preparar el flujo de análisis y visualización antes del muestreo de terreno (primavera-verano 2026-2027).
+:::
+
+```{r}
+#| label: preparar-datos
+library(tidyverse)
+
+sitios  <- read_csv("../datos/sitios.csv")
+terreno <- read_csv("../datos/suelo_terreno.csv")
+fisica  <- read_csv("../datos/suelo_fisica.csv")
+carbono <- read_csv("../datos/suelo_carbono.csv")
+resp    <- read_csv("../datos/suelo_respiracion.csv")
+
+# Tabla de análisis: una fila = sitio x profundidad, con etiquetas legibles
+suelo <- fisica |>
+  left_join(carbono, by = c("sitio_id", "profundidad_cm")) |>
+  left_join(sitios,  by = "sitio_id") |>
+  left_join(terreno, by = "sitio_id") |>
+  mutate(
+    quintil_icu = factor(quintil_icu, levels = paste0("Q", 1:5)),
+    cobertura = factor(tipo_cobertura,
+                       levels = c("borde_carretera", "parque_cesped", "bosque_urbano"),
+                       labels = c("Borde de carretera", "Parque de césped", "Bosque urbano")),
+    manejo = factor(manejo, levels = c("bueno", "deficiente"),
+                    labels = c("Bueno", "Deficiente")),
+    textura = case_when(arena_pct >= 55   ~ "Gruesa",
+                        arcilla_pct >= 30 ~ "Fina",
+                        TRUE              ~ "Media"),
+    textura = factor(textura, levels = c("Gruesa", "Media", "Fina"))
+  )
+
+sup <- suelo |> filter(profundidad_cm == "0-10")   # capa superficial
+
+# Paleta Okabe-Ito (apta para daltonismo) y tema común a todas las figuras
+col_manejo  <- c("Bueno" = "#0072B2", "Deficiente" = "#E69F00")
+col_textura <- c("Gruesa" = "#D55E00", "Media" = "#009E73", "Fina" = "#56B4E9")
+theme_set(theme_minimal(base_size = 13) +
+            theme(plot.title = element_text(face = "bold"),
+                  panel.grid.minor = element_blank()))
+
+# Números que se citan en el texto
+cos_q <- sup |>
+  group_by(quintil_icu) |>
+  summarise(media = mean(cos_pct, na.rm = TRUE),
+            ee    = sd(cos_pct, na.rm = TRUE) / sqrt(sum(!is.na(cos_pct))),
+            .groups = "drop")
+cos_q1 <- round(cos_q$media[cos_q$quintil_icu == "Q1"], 2)
+cos_q5 <- round(cos_q$media[cos_q$quintil_icu == "Q5"], 2)
+caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
+```
+
+## Los suelos urbanos guardan carbono, pero la ciudad se calienta!
+
+Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales (Edmondson et al., 2012). Sin embargo, Santiago no se calienta de forma homogénea: entre sectores de la ciudad la temperatura superficial puede diferir en más de 9 °C (Henríquez et al., 2020). Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes ubicadas en las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ (Vasenev et al., 2021).
+
+Para explorar esta idea, se simularon datos de 120 áreas verdes de Santiago, distribuidas en cinco quintiles de temperatura superficial de verano (de Q1, el más fresco, a Q5, el más cálido), tres tipos de cobertura y dos niveles de calidad de manejo.
+
+## En los sitios más cálidos hay menos carbono
+
+```{r}
+#| label: fig-cos-quintil
+#| fig-cap: "COS de la capa superficial (0-10 cm) en cada quintil de temperatura superficial de verano. Cada punto gris es un sitio; los puntos de color indican el promedio y su intervalo de confianza del 95%."
+#| fig-width: 7
+#| fig-height: 4.5
+ggplot(sup, aes(x = quintil_icu, y = cos_pct)) +
+  geom_jitter(width = 0.15, alpha = 0.35, colour = "grey40", na.rm = TRUE) +
+  geom_pointrange(data = cos_q,
+                  aes(x = quintil_icu, y = media,
+                      ymin = media - 1.96 * ee, ymax = media + 1.96 * ee,
+                      colour = quintil_icu),
+                  inherit.aes = FALSE, size = 0.8, linewidth = 1.2) +
+  scale_colour_viridis_d(option = "inferno", begin = 0.15, end = 0.8,
+                         guide = "none") +
+  scale_x_discrete(labels = c("Q1\n(más fresco)", "Q2", "Q3", "Q4",
+                              "Q5\n(más cálido)")) +
+  labs(title = "El carbono disminuye en las zonas más cálidas",
+       x = "Quintil de temperatura superficial de verano",
+       y = "COS 0-10 cm (%)")
+```
+
+El COS promedio baja de `r cos_q1`% en los sitios más frescos a `r cos_q5`% en los más cálidos, una diferencia de alrededor de `r caida`%. Pero la dispersión entre sitios es grande, dado que en cualquier quintil hay suelos con poco y con mucho carbono. La temperatura parece no explicar todo.
+
+## El manejo y la cobertura pesan tanto como el calor
+
+```{r}
+#| label: fig-cos-manejo
+#| fig-cap: "COS de la capa superficial (0-10 cm) según tipo de cobertura y calidad de manejo. Las cajas resumen la distribución y los puntos muestran cada sitio."
+#| fig-width: 8
+#| fig-height: 4.5
+ggplot(sup, aes(x = cobertura, y = cos_pct, fill = manejo)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.5, na.rm = TRUE) +
+  geom_point(colour = "grey40",
+             position = position_jitterdodge(jitter.width = 0.15,
+                                             dodge.width = 0.75),
+             alpha = 0.5, size = 1.6, na.rm = TRUE) +
+  scale_fill_manual(values = col_manejo) +
+  labs(title = "Un buen manejo se asocia a más carbono en todas las coberturas",
+       x = NULL, y = "COS 0-10 cm (%)",
+       fill = "Calidad de manejo", colour = "Calidad de manejo") +
+  theme(legend.position = "top")
+```
+
+En los tres tipos de cobertura, los sitios con buen manejo tienen más COS que los de manejo deficiente. Los bordes de carretera son los más pobres en carbono, y los bosques urbanos bien manejados, los más ricos. Es decir, la calidad del área verde podría amortiguar, o agravar, el efecto del calor.
+
+## La textura del suelo modula la respuesta al calor
+
+```{r}
+#| label: fig-cos-textura
+#| fig-cap: "Relación entre la temperatura superficial de verano y el COS (0-10 cm) para cada grupo de textura. Las líneas son regresiones lineales y las bandas, su intervalo de confianza del 95%. Textura gruesa: arena ≥ 55%; fina: arcilla ≥ 30%."
+#| fig-width: 9
+#| fig-height: 4
+ggplot(sup, aes(x = lst_verano_c, y = cos_pct, colour = textura)) +
+  geom_point(alpha = 0.6, na.rm = TRUE) +
+  geom_smooth(aes(fill = textura), method = "lm", alpha = 0.2, na.rm = TRUE) +
+  facet_wrap(~ textura, labeller = labeller(textura = function(x) paste("Textura", tolower(x)))) +
+  scale_colour_manual(values = col_textura, guide = "none") +
+  scale_fill_manual(values = col_textura, guide = "none") +
+  labs(title = "Los suelos finos tienen más carbono, pero también pierden más con el calor",
+       x = "Temperatura superficial de verano (°C)",
+       y = "COS 0-10 cm (%)")
+```
+
+Los suelos de textura fina almacenan más carbono, como se espera por su mayor capacidad de estabilizarlo (Cotrufo & Lavallee, 2022). Sin embargo, en este borrador también muestran la mayor caída con la temperatura y, por lo tanto, hay que interpretar este patrón con cautela, ya que hay pocos sitios de textura fina, y la banda de confianza es amplia.
+
+## Por qué? Los microorganismos respiran más con calor!
+
+```{r}
+#| label: fig-rm
+#| fig-cap: "Respiración microbiana de la capa superficial incubada a 20, 30 y 40 °C, con 30 y 70% de la capacidad de retención de agua (CRA). Promedio de los sitios ± intervalo de confianza del 95%."
+#| fig-width: 7
+#| fig-height: 4.5
+rm_sitio <- resp |>
+  group_by(sitio_id, temp_incubacion_c, humedad_cra_pct) |>
+  summarise(rm = mean(rm_ug_co2c_g_h, na.rm = TRUE), .groups = "drop") |>
+  filter(is.finite(rm))
+
+rm_resumen <- rm_sitio |>
+  group_by(temp_incubacion_c, humedad_cra_pct) |>
+  summarise(media = mean(rm), ee = sd(rm) / sqrt(n()), .groups = "drop") |>
+  mutate(humedad = factor(paste0(humedad_cra_pct, " % CRA"),
+                          levels = c("70 % CRA", "30 % CRA")))
+
+ggplot(rm_resumen, aes(x = temp_incubacion_c, y = media, colour = humedad)) +
+  geom_line(linewidth = 1) +
+  geom_pointrange(aes(ymin = media - 1.96 * ee, ymax = media + 1.96 * ee),
+                  size = 0.6) +
+  scale_colour_manual(values = c("70 % CRA" = "#0072B2", "30 % CRA" = "#D55E00")) +
+  scale_x_continuous(breaks = c(20, 30, 40)) +
+  labs(title = "Si hay agua, el calor dispara la respiración",
+       x = "Temperatura de incubación (°C)",
+       y = expression("Respiración microbiana (µg CO"[2]*"-C g"^-1*" h"^-1*")"),
+       colour = "Humedad") +
+  theme(legend.position = "top")
+
+n_sat <- resp |>
+  filter(temp_incubacion_c == 40, humedad_cra_pct == 70) |>
+  summarise(n = sum(is.na(rm_ug_co2c_g_h))) |>
+  pull(n)
+```
+
+La respiración microbiana del suelo tiende a aumentar con la temperatura, con un Q~10~ típicamente cercano a 2 (Lloyd & Taylor, 1994; Davidson & Janssens, 2006), aunque esta respuesta depende de la disponibilidad de agua en el suelo (Davidson et al., 1998; Moyano et al., 2013). Este resultado ofrece un mecanismo para la figura de los quintiles, ya que mientras más calor, más actividad microbiana y más carbono que se pierde como CO~2~. En una ciudad donde las áreas verdes se riegan, el riego podría intensificar este efecto.
+
+A 40 °C y 70 % CRA, `r n_sat` mediciones saturaron la placa de MicroResp y quedaron como datos faltantes (MNAR). Como faltan justamente los valores más altos, el promedio de ese tratamiento está subestimado.
+
+## En resumen y próximos pasos
+
+En estos datos simulados, las áreas verdes ubicadas en las zonas más cálidas de Santiago tienen menos carbono en sus suelos, y la respiración microbiana aumenta fuertemente con la temperatura. Pero la calidad del manejo, el tipo de cobertura y la textura del suelo también modifican cuánto carbono se almacena.
+Por tratarse de una simulación, los datos deben ser entendidos como demuestración. Se espera que los resultados reales, tras los terrenos y los anális de datos, sean mucho más complejos.
+
+Próximos pasos:
+
+- Ajustar modelos (regresión múltiple / GLM) que evalúen el efecto de la temperatura controlando por manejo, cobertura y textura, incluyendo la interacción temperatura vs. textura.
+- Incorporar un mapa de los sitios sobre Santiago cuando estén las coordenadas reales (en la simulación, las coordenadas son aleatorias y no tienen patrón espacial).
+- Reemplazar los datos simulados por los de terreno y laboratorio, manteniendo la misma estructura de tablas.
+
+
+## Referencias
+
+Cotrufo, M. F., & Lavallee, J. M. (2022). Soil organic matter formation, persistence, and functioning: A synthesis of current understanding to inform its conservation and regeneration. *Advances in Agronomy*, 172, 1–66. <https://doi.org/10.1016/bs.agron.2021.11.002>
+
+Davidson, E. A., Belk, E., & Boone, R. D. (1998). Soil water content and temperature as independent or confounded factors controlling soil respiration in a temperate mixed hardwood forest. *Global Change Biology*, 4(2), 217–227. <https://doi.org/10.1046/j.1365-2486.1998.00128.x>
+
+Davidson, E. A., & Janssens, I. A. (2006). Temperature sensitivity of soil carbon decomposition and feedbacks to climate change. *Nature*, 440(7081), 165–173. <https://doi.org/10.1038/nature04514>
+
+Edmondson, J. L., Davies, Z. G., McHugh, N., Gaston, K. J., & Leake, J. R. (2012). Organic carbon hidden in urban ecosystems. *Scientific Reports*, 2, 963. <https://doi.org/10.1038/srep00963>
+
+Henríquez, C., Qüense, J., Contreras, P., Guerrero, N., Smith, P., & González, F. (2020). *Informe Proyecto ARClim: Ciudades*. Centro de Cambio Global UC, Centro de Ciencia del Clima y la Resiliencia y CEDEUS, para el Ministerio del Medio Ambiente – GIZ. Santiago.
+
+Lloyd, J., & Taylor, J. A. (1994). On the temperature dependence of soil respiration. *Functional Ecology*, 8(3), 315–323. <https://doi.org/10.2307/2389824>
+
+Moyano, F. E., Manzoni, S., & Chenu, C. (2013). Responses of soil heterotrophic respiration to moisture availability: An exploration of processes and models. *Soil Biology and Biochemistry*, 59, 72–85. <https://doi.org/10.1016/j.soilbio.2013.01.002>
+
+Vasenev, V., Varentsov, M., Konstantinov, P., Romzaykina, O., Kanareykina, I., Dvornikov, Y., & Manukyan, V. (2021). Projecting urban heat island effect on the spatial-temporal variation of microbial respiration in urban soils of Moscow megalopolis. *Science of The Total Environment*, 786, 147457. <https://doi.org/10.1016/j.scitotenv.2021.147457>
+

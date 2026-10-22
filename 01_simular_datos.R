@@ -144,7 +144,7 @@ resp <- resp |>
   mutate(rm_ug_co2c_g_h = if_else(rm_ug_co2c_g_h > 4.5 | runif(n()) < 0.02,
                                   NA_real_, rm_ug_co2c_g_h))
 
-# 6. Guardar (fechas en ISO 8601: AAAA-MM-DD) --------------------------------
+# 6. Guardar (fechas en ISO) --------------------------------
 base |>
   select(sitio_id, fecha_muestreo, latitud, longitud, tipo_cobertura,
          manejo, quintil_icu, lst_verano_c, ndvi, ndmi) |>

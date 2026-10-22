@@ -62,7 +62,7 @@ g02 <- suelo |>
   filter(profundidad_cm == "0-10") |>
   ggplot(aes(x = lst_verano_c, y = cos_pct, colour = textura_grupo)) +
   geom_point(alpha = 0.7, na.rm = TRUE) +
-  geom_smooth(method = "lm", se = FALSE, na.rm = TRUE) +
+  geom_smooth(method = "lm", se = TRUE, na.rm = TRUE) +
   labs(x = "Temperatura superficial en verano (°C)", y = "COS 0-10 cm (%)",
        colour = "Textura") +
   theme_bw()
@@ -89,7 +89,7 @@ miss_var_summary(resp)
 
 g04 <- vis_miss(suelo |> select(cone_index_mpa, da_g_cm3, fragmentos_rocosos_pct,
                                 cos_pct, cop_pct, coam_pct, humedad_vol_m3_m3))
-ggsave("figuras/04_na_mapa_suelo.png", g04, width = 7, height = 5)
+ggsave("figuras/04_na_mapa_suelo.png", g04, width = 13, height = 5)
 
 # ¿La DA falta al azar? Se ve que falta solo con muchos fragmentos rocosos (MAR)
 g05 <- ggplot(suelo, aes(x = fragmentos_rocosos_pct, y = da_g_cm3)) +
