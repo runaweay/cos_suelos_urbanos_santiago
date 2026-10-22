@@ -1,6 +1,6 @@
 # cos_suelos_urbanos_santiago
 
-> Todos los datos de este repositorio son simulados!y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
+> Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
 Proyecto final del curso *Visualización de datos medioambientales con R*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
 
