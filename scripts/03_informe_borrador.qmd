@@ -228,9 +228,3 @@ Lloyd, J., & Taylor, J. A. (1994). On the temperature dependence of soil respira
 Moyano, F. E., Manzoni, S., & Chenu, C. (2013). Responses of soil heterotrophic respiration to moisture availability: An exploration of processes and models. *Soil Biology and Biochemistry*, 59, 72–85. <https://doi.org/10.1016/j.soilbio.2013.01.002>
 
 Vasenev, V., Varentsov, M., Konstantinov, P., Romzaykina, O., Kanareykina, I., Dvornikov, Y., & Manukyan, V. (2021). Projecting urban heat island effect on the spatial-temporal variation of microbial respiration in urban soils of Moscow megalopolis. *Science of The Total Environment*, 786, 147457. <https://doi.org/10.1016/j.scitotenv.2021.147457>
-
-muestras |>
-  separate_wider_delim(muestra_id, delim = "_",
-                       names = c("sitio_id", "profundidad_cm", "analisis",
-                                 "condicion", "replica"),
-                       too_few = "align_start")
