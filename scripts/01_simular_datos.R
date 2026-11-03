@@ -143,31 +143,3 @@ perfil <- perfil |>
 resp <- resp |>
   mutate(rm_ug_co2c_g_h = if_else(rm_ug_co2c_g_h > 4.5 | runif(n()) < 0.02,
                                   NA_real_, rm_ug_co2c_g_h))
-
-# 6. Guardar (fechas en ISO) --------------------------------
-base |>
-  select(sitio_id, fecha_muestreo, latitud, longitud, tipo_cobertura,
-         manejo, quintil_icu, lst_verano_c, ndvi, ndmi) |>
-  arrange(sitio_id) |>
-  write_csv("datos/sitios.csv")
-
-base |>
-  select(sitio_id, cone_index_mpa, humedad_vol_m3_m3, temp_suelo_c, ce_ds_m) |>
-  arrange(sitio_id) |>
-  write_csv("datos/suelo_terreno.csv", na = "NA")
-
-perfil |>
-  select(sitio_id, profundidad_cm, arena_pct, limo_pct, arcilla_pct,
-         fragmentos_rocosos_pct, da_g_cm3, estabilidad_agregados_pct) |>
-  arrange(sitio_id, profundidad_cm) |>
-  write_csv("datos/suelo_fisica.csv", na = "NA")
-
-perfil |>
-  select(sitio_id, profundidad_cm, cos_pct, cop_pct, coam_pct) |>
-  arrange(sitio_id, profundidad_cm) |>
-  write_csv("datos/suelo_carbono.csv", na = "NA")
-
-resp |>
-  select(sitio_id, temp_incubacion_c, humedad_cra_pct, replica, rm_ug_co2c_g_h) |>
-  arrange(sitio_id, temp_incubacion_c, humedad_cra_pct, replica) |>
-  write_csv("datos/suelo_respiracion.csv", na = "NA")

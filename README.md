@@ -6,16 +6,20 @@ Proyecto final del curso *Visualización de datos medioambientales con R*, basad
 
 ## Preguntas exploratorias
 
-1. El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
-2. La calidad del manejo y el tipo de cobertura modifican esa relación?
-3. La textura del suelo cambia la respuesta del COS al calor?
-4. La respiración microbiana aumenta con la temperatura y depende de la humedad?
+1. ¿El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
+2. ¿La calidad del manejo y el tipo de cobertura modifican esa relación?
+3. ¿La textura del suelo cambia la respuesta del COS al calor?
+4. ¿La respiración microbiana aumenta con la temperatura y depende de la humedad?
 
 ## Cómo reproducir
 
-1. Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`).
-2. Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
-3. Renderizar `scripts/03_informe_borrador.qmd` con Quarto (lee los datos desde `../datos/`).
+1. Abrir `doctorado_cos_suelos_urbanos_santiago.Rproj` en RStudio.
+2. Instalar los paquetes con las mismas versiones usadas: `renv::restore()`.
+3. Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`, semilla fija `set.seed(2026)`).
+4. Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
+5. Renderizar los informes de `scripts/` con Quarto (leen los datos desde `../datos/`):
+   - `03_informe_borrador.qmd`: borrador del proyecto final.
+   - `04_group_by_nest.qmd`: Actividad 9, Q10 de la respiración por sitio con `nest()` + `map()` + `broom`.
 
 ## Estructura
 
@@ -26,8 +30,11 @@ cos_suelos_urbanos_santiago/
 │   ├── 01_simular_datos.R       # genera los datos simulados
 │   ├── 02_eda.R                 # análisis exploratorio y datos ausentes
 │   ├── 03_informe_borrador.qmd  # borrador del proyecto final (storytelling)
-│   └── 03_informe_borrador.html # informe renderizado
+│   ├── 03_informe_borrador.html # informe renderizado
+│   ├── 04_group_by_nest.qmd     # Actividad 9: un modelo por sitio (Q10)
+│   └── 04_group_by_nest.html    # actividad renderizada
 ├── figuras/    # salidas exploratorias del EDA, numeradas 01_, 02_, ...
+├── renv/ y renv.lock            # entorno reproducible de paquetes (renv)
 ├── doctorado_cos_suelos_urbanos_santiago.Rproj   # proyecto de RStudio
 ├── .gitignore
 └── README.md

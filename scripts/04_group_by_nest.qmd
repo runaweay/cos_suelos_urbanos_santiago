@@ -1,0 +1,115 @@
+---
+title: "Actividad 9: group_by, nest y map"
+subtitle: "Respiración microbiana por sitio (utilizando mis datos simulados)"
+author: "Mariana dos Santos Moreno"
+lang: es
+format:
+  html:
+    embed-resources: true
+    code-fold: false
+execute:
+  warning: false
+  message: false
+---
+
+> Los datos fueron simulados con `scripts/01_simular_datos.R`, así que no son resultados reales.
+
+En mi tesis, medimos la respiración microbiana (RM) de cada sitio a 20, 30 y 40 °C. Supongamos que queremos saber qué tan sensible a la temperatura es la respiración en cada sitio, es decir, su Q10 (cuántas veces aumenta la respiración con 10 °C más). Para eso tendríamos que ajustar el mismo modelo 120 veces, una por sitio, lo que es muy bueno para `nest()` y `map()`.
+
+```{r}
+library(tidyverse)
+library(broom)
+
+sitios <- read_csv("../datos/sitios.csv")
+resp   <- read_csv("../datos/suelo_respiracion.csv")
+```
+
+## 1. Los datos
+
+Utilizamos solo la humedad de 70 % CRA para comparar todos los sitios en la misma condición, y unimos los datos de cada sitio (tipo de cobertura y quintil de temperatura).
+
+```{r}
+resp70 <- resp |>
+  filter(humedad_cra_pct == 70) |>
+  left_join(sitios, by = "sitio_id")
+
+ggplot(resp70, aes(temp_incubacion_c, rm_ug_co2c_g_h, group = sitio_id)) +
+  geom_line(stat = "summary", fun = mean, alpha = 0.3, colour = "grey40") +
+  facet_wrap(~ tipo_cobertura) +
+  labs(x = "Temperatura de incubación (°C)",
+       y = expression("RM (µg CO"[2]*"-C g"^-1*" h"^-1*")"))
+```
+
+En el gráfico, cada línea es un sitio y la respiración aumenta con la temperatura en todos, pero no al mismo ritmo.
+
+## 2. Agrupar con `nest()`
+
+El sitio es la unidad en la que queremos un Q10. Así como en el ejemplo de gapminder sobre los continentes, agregamos la cobertura para luego buscar patrones entre grupos. Cada sitio queda con su propia tabla de datos dentro de la columna `data`.
+
+```{r}
+by_sitio <- resp70 |>
+  nest(.by = c(tipo_cobertura, quintil_icu, sitio_id))
+by_sitio
+```
+
+## 3. Un modelo por sitio con `map()`
+
+Está comprobado que la respiración crece de forma exponencial con la temperatura. Si uso el logaritmo de la RM, la relación se vuelve lineal, y el Q10 sale de la pendiente, p. ej.: Q10 = exp(10 × pendiente).
+
+```{r}
+by_sitio_lm <- by_sitio |>
+  mutate(model = map(data, \(x) lm(log(rm_ug_co2c_g_h) ~ temp_incubacion_c,
+                                   data = x)))
+```
+
+## 4. Extraer resultados con `glance()` y `tidy()`
+
+En ese contexto, `glance()` nos da el ajuste de cada modelo (R²) y `tidy()` los coeficientes, de donde calculamos el Q10. También contamos cuántas mediciones tiene cada sitio (`n`), porque hay datos faltantes.
+
+```{r}
+models <- by_sitio_lm |>
+  mutate(glance = map(model, glance),
+         tidy   = map(model, tidy),
+         rsq    = map_dbl(glance, "r.squared"),
+         q10    = map_dbl(tidy, \(t) exp(10 * t$estimate[2])),
+         n      = map_int(data, \(x) sum(!is.na(x$rm_ug_co2c_g_h))))
+
+models |> select(sitio_id, tipo_cobertura, rsq, q10, n)
+```
+
+## 5. Existe un patrón en los R²?
+
+```{r}
+#| fig-height: 6
+models |>
+  ggplot(aes(x = rsq, y = fct_reorder(sitio_id, rsq))) +
+  geom_point(aes(colour = tipo_cobertura), size = 2) +
+  theme_classic(13) +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
+  labs(x = expression(R^2), y = "Sitio", colour = "Cobertura")
+```
+
+El modelo ajusta muy bien en casi todos los sitios (R² alto), pero algunos quedan por debajo.
+
+## 6. Los 12 sitios con menor R²
+
+```{r}
+models |>
+  slice_min(rsq, n = 12) |>
+  select(sitio_id, rsq, n, data) |>
+  unnest(data) |>
+  ggplot(aes(temp_incubacion_c, rm_ug_co2c_g_h)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(vars(sitio_id), nrow = 3) +
+  scale_x_continuous(breaks = c(20, 30, 40), limits = c(18, 42)) +
+  labs(x = "Temperatura de incubación (°C)",
+       y = expression("RM (µg CO"[2]*"-C g"^-1*" h"^-1*")"))
+```
+
+```{r}
+models |>
+  slice_min(rsq, n = 12) |>
+  select(sitio_id, tipo_cobertura, rsq, q10, n)
+```
+
+Como los datos son simulados con un Q10 = 2 en todos los sitios, los R² solo reflejan los parámetros definidos y no esperamos diferencias entre coberturas o quintiles; lo único que sí muestran es que varios de los sitios con menor R² tienen menos de 9 mediciones porque les faltan los valores a 40 °C (muestras que saturaron la placa de MicroResp, un dato faltante MNAR), de modo que el ajuste empeora justo en los sitios con mayor respiración y su Q10 se estima solo con 20 y 30 °C, por lo que, con los datos reales, tendremos que repetir esas muestras antes de comparar el Q10 entre sitios y responder la pregunta central, si el Q10 cambia con la isla de calor.
