@@ -194,23 +194,6 @@ Próximos pasos:
 - Reemplazar los datos simulados por los de terreno y laboratorio, manteniendo la misma estructura de tablas.
 
 
-
-library(tidyverse)
-
-muestras <- tibble(
-  muestra_id = c("S014_0-10_cos",
-                 "S014_10-20_textura",
-                 "S014_0-10_rm_t30-h70_r2",
-                 "S027_0-10_rm_t40-h30_r1")
-)
-
-muestras |>
-  separate_wider_delim(muestra_id, delim = "_",
-                       names = c("sitio_id", "profundidad_cm", "analisis",
-                                 "condicion", "replica"),
-                       too_few = "align_start")
-
-
 ## Referencias
 
 Cotrufo, M. F., & Lavallee, J. M. (2022). Soil organic matter formation, persistence, and functioning: A synthesis of current understanding to inform its conservation and regeneration. *Advances in Agronomy*, 172, 1–66. <https://doi.org/10.1016/bs.agron.2021.11.002>
