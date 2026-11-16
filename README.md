@@ -1,4 +1,4 @@
-# cos_suelos_urbanos_santiago
+# Influencia de las islas de calor en el carbono de los suelos urbanos de Santiago
 
 > Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
