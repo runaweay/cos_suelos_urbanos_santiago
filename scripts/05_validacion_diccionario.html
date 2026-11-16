@@ -2246,7 +2246,7 @@ vertical-align: -.125em;
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>terreno <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;../datos/suelo_terreno.csv&quot;</span>)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>carbono <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;../datos/suelo_carbono.csv&quot;</span>)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de análisis (una fila = sitio x profundidad)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#tabla de análisis (una fila = sitio x profundidad)</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>suelo <span class="ot">&lt;-</span> carbono <span class="sc">|&gt;</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(sitios,  <span class="at">by =</span> <span class="st">&quot;sitio_id&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(terreno, <span class="at">by =</span> <span class="st">&quot;sitio_id&quot;</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -2307,14 +2307,14 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="función-de-validación">2. Función de validación</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>validar_suelos <span class="ot">&lt;-</span> <span class="cf">function</span>(datos) {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estructural: cobertura válida y sin NA</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#estructural: cobertura válida y sin NA</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  cobertura_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>tipo_cobertura <span class="sc">%in%</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">c</span>(<span class="st">&quot;parque_cesped&quot;</span>, <span class="st">&quot;borde_carretera&quot;</span>, <span class="st">&quot;bosque_urbano&quot;</span>))</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Contenido: COS entre 0 y 15% (NA permitido)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: COS entre 0 y 15% (NA permitido)</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  cos_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cos_pct <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cos_pct <span class="sc">&lt;=</span> <span class="dv">15</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  cone_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cone_index_mpa <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cone_index_mpa <span class="sc">&lt;=</span> <span class="dv">5</span>,</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
@@ -2338,9 +2338,9 @@ Penetrómetro 0-5 MPa (contenido): OK </code></pre>
 <p>Para comprobar que la función detecta problemas, se modifica una copia de los datos:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>suelo_mal <span class="ot">&lt;-</span> suelo</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>tipo_cobertura[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;plaza&quot;</span>   <span class="co"># categoría que no está en el diseño</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cos_pct[<span class="dv">5</span>]        <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.8</span>      <span class="co"># COS negativo</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cone_index_mpa[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fl">6.2</span>       <span class="co"># sobre el límite del penetrómetro</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>tipo_cobertura[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;plaza&quot;</span>   <span class="co">#categoría que no está en el diseño</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cos_pct[<span class="dv">5</span>]        <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.8</span>      <span class="co">#COS negativo</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cone_index_mpa[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fl">6.2</span>       <span class="co">#sobre el límite del penetrómetro</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo_mal)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">

@@ -21,7 +21,7 @@ sitios  <- read_csv("../datos/sitios.csv")
 terreno <- read_csv("../datos/suelo_terreno.csv")
 carbono <- read_csv("../datos/suelo_carbono.csv")
 
-# Tabla de análisis (una fila = sitio x profundidad)
+#tabla de análisis (una fila = sitio x profundidad)
 suelo <- carbono |>
   left_join(sitios,  by = "sitio_id") |>
   left_join(terreno, by = "sitio_id")
@@ -46,14 +46,14 @@ El tipo de cobertura es parte del diseño del muestreo (3 coberturas × 2 manejo
 
 ```{r}
 validar_suelos <- function(datos) {
-  # Estructural: cobertura válida y sin NA
+  #estructural: cobertura válida y sin NA
   cobertura_ok <- all(datos$tipo_cobertura %in%
                         c("parque_cesped", "borde_carretera", "bosque_urbano"))
 
-  # Contenido: COS entre 0 y 15% (NA permitido)
+  #contenido: COS entre 0 y 15% (NA permitido)
   cos_ok <- all(datos$cos_pct >= 0 & datos$cos_pct <= 15, na.rm = TRUE)
 
-  # Contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)
+  #contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)
   cone_ok <- all(datos$cone_index_mpa >= 0 & datos$cone_index_mpa <= 5,
                  na.rm = TRUE)
 
@@ -73,9 +73,9 @@ Para comprobar que la función detecta problemas, se modifica una copia de los d
 
 ```{r}
 suelo_mal <- suelo
-suelo_mal$tipo_cobertura[3] <- "plaza"   # categoría que no está en el diseño
-suelo_mal$cos_pct[5]        <- -0.8      # COS negativo
-suelo_mal$cone_index_mpa[7] <- 6.2       # sobre el límite del penetrómetro
+suelo_mal$tipo_cobertura[3] <- "plaza"   #categoría que no está en el diseño
+suelo_mal$cos_pct[5]        <- -0.8      #COS negativo
+suelo_mal$cone_index_mpa[7] <- 6.2       #sobre el límite del penetrómetro
 
 validar_suelos(suelo_mal)
 ```
