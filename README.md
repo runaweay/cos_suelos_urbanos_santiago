@@ -70,20 +70,20 @@ Rangos físicamente plausibles para suelos minerales de áreas verdes de Santiag
 | `lst_verano_c` | numérica | °C | 20 - 45 | no |
 | `ndvi`, `ndmi` | numérica | \- | -1 - 1 | no |
 | `cone_index_mpa` | numérica | MPa | 0 - 5 (límite del penetrómetro) | sí (MNAR) |
-| `humedad_vol_m3_m3` | numérica | m^3^/m^3^ | 0 - 0.6 | no |
+| `humedad_vol_m3_m3` | numérica | m³/m³ | 0 - 0.6 | no |
 | `temp_suelo_c` | numérica | °C | -5 - 60 | no |
 | `ce_ds_m` | numérica | dS/m | ≥ 0 | no |
 | `profundidad_cm` | categórica | cm | 0-10, 10-20 | no |
 | `arena_pct`, `limo_pct`, `arcilla_pct` | numérica | \% | 0 - 100; la suma de las tres = 100 | no |
 | `fragmentos_rocosos_pct` | numérica | \% | 0 - 100 | no |
-| `da_g_cm3` | numérica | g/cm^3^ | 0.8 - 2.0 | sí (MAR) |
+| `da_g_cm3` | numérica | g/cm³ | 0.8 - 2.0 | sí (MAR) |
 | `estabilidad_agregados_pct` | numérica | \% | 0 - 100 | no |
 | `cos_pct` | numérica | \% | 0 - 15 | sí (MCAR) |
 | `cop_pct`, `coam_pct` | numérica | \% | ≥ 0 y `cop_pct` + `coam_pct` ≈ `cos_pct` | sí (MCAR) |
 | `temp_incubacion_c` | numérica | °C | 20, 30, 40 | no |
 | `humedad_cra_pct` | numérica | \% CRA | 30, 70 | no |
 | `replica` | entera | \- | 1 - 3 | no |
-| `rm_ug_co2c_g_h` | numérica | µg CO^~2~^-C/g/h | ≥ 0 | sí (MCAR y MNAR) |
+| `rm_ug_co2c_g_h` | numérica | µg CO₂-C/g/h | ≥ 0 | sí (MCAR y MNAR) |
 
 ## Datos ausentes incluidos a propósito
 
