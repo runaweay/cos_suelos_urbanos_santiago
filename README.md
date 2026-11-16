@@ -82,7 +82,7 @@ Rangos físicamente plausibles para suelos minerales de áreas verdes de Santiag
 | `cop_pct`, `coam_pct` | numérica | \% | ≥ 0 y `cop_pct` + `coam_pct` ≈ `cos_pct` | sí (MCAR) |
 | `temp_incubacion_c` | numérica | °C | 20, 30, 40 | no |
 | `humedad_cra_pct` | numérica | \% CRA | 30, 70 | no |
-| `replica` | entera | \- | 1 – 3 | no |
+| `replica` | entera | \- | 1 - 3 | no |
 | `rm_ug_co2c_g_h` | numérica | µg CO₂-C/g/h | ≥ 0 | sí (MCAR y MNAR) |
 
 ## Datos ausentes incluidos a propósito
