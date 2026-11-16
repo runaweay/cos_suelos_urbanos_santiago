@@ -6,25 +6,25 @@ Proyecto final del curso *Visualización de datos medioambientales con R*, basad
 
 ## Preguntas exploratorias
 
-1. ¿El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
-2. ¿La calidad del manejo y el tipo de cobertura modifican esa relación?
-3. ¿La textura del suelo cambia la respuesta del COS al calor?
-4. ¿La respiración microbiana aumenta con la temperatura y depende de la humedad?
+1.  ¿El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
+2.  ¿La calidad del manejo y el tipo de cobertura modifican esa relación?
+3.  ¿La textura del suelo cambia la respuesta del COS al calor?
+4.  ¿La respiración microbiana aumenta con la temperatura y depende de la humedad?
 
 ## Cómo reproducir
 
-1. Abrir `doctorado_cos_suelos_urbanos_santiago.Rproj` en RStudio.
-2. Instalar los paquetes con las mismas versiones usadas: `renv::restore()`.
-3. Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`, semilla fija `set.seed(2026)`).
-4. Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
-5. Renderizar los informes de `scripts/` con Quarto (leen los datos desde `../datos/`):
-   - `03_informe_borrador.qmd`: borrador del proyecto final.
-   - `04_group_by_nest.qmd`: Actividad 9, Q10 de la respiración por sitio con `nest()` + `map()` + `broom`.
-   - `05_validacion_diccionario.qmd`: Actividad 10, mini diccionario y función de validación de tres variables.
+1.  Abrir `doctorado_cos_suelos_urbanos_santiago.Rproj` en RStudio.
+2.  Instalar los paquetes con las mismas versiones usadas: `renv::restore()`.
+3.  Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`, semilla fija `set.seed(2026)`).
+4.  Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
+5.  Renderizar los informes de `scripts/` con Quarto (leen los datos desde `../datos/`):
+    - `03_informe_borrador.qmd`: borrador del proyecto final.
+    - `04_group_by_nest.qmd`: Actividad 9, Q^10^ de la respiración por sitio con `nest()` + `map()` + `broom`.
+    - `05_validacion_diccionario.qmd`: Actividad 10, mini diccionario y función de validación de tres variables.
 
 ## Estructura
 
-```
+```         
 cos_suelos_urbanos_santiago/
 ├── datos/      # tablas en formato ordenado (tidy), una por tipo de dato
 ├── scripts/
@@ -48,7 +48,7 @@ cos_suelos_urbanos_santiago/
 Todas las tablas se unen por `sitio_id`. Fechas en ISO 8601 (AAAA-MM-DD). Datos ausentes = `NA`.
 
 | Archivo | Una fila = | Variables |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | `sitios.csv` | sitio (n = 120) | `fecha_muestreo`, `latitud`, `longitud`, `tipo_cobertura` (parque_cesped, borde_carretera, bosque_urbano), `manejo` (bueno, deficiente), `quintil_icu` (Q1–Q5), `lst_verano_c` (°C), `ndvi`, `ndmi` |
 | `suelo_terreno.csv` | sitio | `cone_index_mpa` (penetrómetro), `humedad_vol_m3_m3`, `temp_suelo_c`, `ce_ds_m` (TEROS-12) |
 | `suelo_fisica.csv` | sitio × profundidad | `profundidad_cm` (0-10, 10-20), `arena_pct`, `limo_pct`, `arcilla_pct`, `fragmentos_rocosos_pct`, `da_g_cm3`, `estabilidad_agregados_pct` |
@@ -60,37 +60,37 @@ Todas las tablas se unen por `sitio_id`. Fechas en ISO 8601 (AAAA-MM-DD). Datos 
 Rangos físicamente plausibles para suelos minerales de áreas verdes de Santiago. Sirven para validar tanto los datos simulados como los de terreno y laboratorio. La validación de `tipo_cobertura`, `cos_pct` y `cone_index_mpa` está implementada en `scripts/05_validacion_diccionario.qmd`.
 
 | Variable | Tipo | Unidad | Valores esperados | NA |
-|---|---|---|---|---|
-| `sitio_id` | identificador | — | S001–S120, único por sitio | no |
+|---------------|---------------|---------------|---------------|---------------|
+| `sitio_id` | identificador | \- | S001–S120, único por sitio | no |
 | `fecha_muestreo` | fecha | AAAA-MM-DD | primavera-verano 2026-2027 | no |
 | `latitud`, `longitud` | numérica | grados decimales | dentro del área urbana de Santiago (≈ -33.7 a -33.3; -70.9 a -70.4) | no |
-| `tipo_cobertura` | categórica | — | parque_cesped, borde_carretera, bosque_urbano | no |
-| `manejo` | categórica | — | bueno, deficiente | no |
-| `quintil_icu` | categórica ordinal | — | Q1–Q5 | no |
-| `lst_verano_c` | numérica | °C | 20 – 45 | no |
-| `ndvi`, `ndmi` | numérica | — | -1 – 1 | no |
-| `cone_index_mpa` | numérica | MPa | 0 – 5 (límite del penetrómetro) | sí (MNAR) |
-| `humedad_vol_m3_m3` | numérica | m³/m³ | 0 – 0.6 | no |
-| `temp_suelo_c` | numérica | °C | -5 – 60 | no |
+| `tipo_cobertura` | categórica | \- | parque_cesped, borde_carretera, bosque_urbano | no |
+| `manejo` | categórica | \- | bueno, deficiente | no |
+| `quintil_icu` | categórica ordinal | \- | Q1-Q5 | no |
+| `lst_verano_c` | numérica | °C | 20 - 45 | no |
+| `ndvi`, `ndmi` | numérica | \- | -1 - 1 | no |
+| `cone_index_mpa` | numérica | MPa | 0 - 5 (límite del penetrómetro) | sí (MNAR) |
+| `humedad_vol_m3_m3` | numérica | m^3^/m^3^ | 0 - 0.6 | no |
+| `temp_suelo_c` | numérica | °C | -5 - 60 | no |
 | `ce_ds_m` | numérica | dS/m | ≥ 0 | no |
 | `profundidad_cm` | categórica | cm | 0-10, 10-20 | no |
-| `arena_pct`, `limo_pct`, `arcilla_pct` | numérica | % | 0 – 100; la suma de las tres = 100 | no |
-| `fragmentos_rocosos_pct` | numérica | % | 0 – 100 | no |
-| `da_g_cm3` | numérica | g/cm³ | 0.8 – 2.0 | sí (MAR) |
-| `estabilidad_agregados_pct` | numérica | % | 0 – 100 | no |
-| `cos_pct` | numérica | % | 0 – 15 | sí (MCAR) |
-| `cop_pct`, `coam_pct` | numérica | % | ≥ 0 y `cop_pct` + `coam_pct` ≈ `cos_pct` | sí (MCAR) |
+| `arena_pct`, `limo_pct`, `arcilla_pct` | numérica | \% | 0 - 100; la suma de las tres = 100 | no |
+| `fragmentos_rocosos_pct` | numérica | \% | 0 - 100 | no |
+| `da_g_cm3` | numérica | g/cm³ | 0.8 - 2.0 | sí (MAR) |
+| `estabilidad_agregados_pct` | numérica | \% | 0 - 100 | no |
+| `cos_pct` | numérica | \% | 0 - 15 | sí (MCAR) |
+| `cop_pct`, `coam_pct` | numérica | \% | ≥ 0 y `cop_pct` + `coam_pct` ≈ `cos_pct` | sí (MCAR) |
 | `temp_incubacion_c` | numérica | °C | 20, 30, 40 | no |
-| `humedad_cra_pct` | numérica | % CRA | 30, 70 | no |
-| `replica` | entera | — | 1 – 3 | no |
+| `humedad_cra_pct` | numérica | \% CRA | 30, 70 | no |
+| `replica` | entera | \- | 1 – 3 | no |
 | `rm_ug_co2c_g_h` | numérica | µg CO₂-C/g/h | ≥ 0 | sí (MCAR y MNAR) |
 
 ## Datos ausentes incluidos a propósito
 
 | Variable | Mecanismo | Causa simulada |
-|---|---|---|
-| `cos_pct`, `cop_pct`, `coam_pct` | MCAR | ~3 % de muestras extraviadas (etiqueta o bolsa perdida) |
-| `rm_ug_co2c_g_h` | MCAR | ~2 % de pocillos contaminados o con burbujas |
-| `da_g_cm3` | MAR | con > 20 % de fragmentos rocosos el cilindro no entra |
+|------------------------|------------------------|------------------------|
+| `cos_pct`, `cop_pct`, `coam_pct` | MCAR | \~3 % de muestras extraviadas (etiqueta o bolsa perdida) |
+| `rm_ug_co2c_g_h` | MCAR | \~2 % de pocillos contaminados o con burbujas |
+| `da_g_cm3` | MAR | con \> 20 % de fragmentos rocosos el cilindro no entra |
 | `cone_index_mpa` | MNAR | el penetrómetro no mide sobre 5 MPa |
 | `rm_ug_co2c_g_h` | MNAR | la placa MicroResp se satura con respiración muy alta |
