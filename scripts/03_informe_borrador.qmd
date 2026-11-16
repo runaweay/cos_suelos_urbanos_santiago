@@ -52,8 +52,9 @@ suelo <- fisica |>
 sup <- suelo |> filter(profundidad_cm == "0-10")   # capa superficial
 
 # Paleta Okabe-Ito (apta para daltonismo) y tema común a todas las figuras
-col_manejo  <- c("Bueno" = "#0072B2", "Deficiente" = "#E69F00")
-col_textura <- c("Gruesa" = "#D55E00", "Media" = "#009E73", "Fina" = "#56B4E9")
+col_manejo  <- c("Bueno" = "#009E73", "Deficiente" = "#D55E00")              # verde / bermellón
+col_textura <- c("Gruesa" = "#E69F00", "Media" = "#CC79A7", "Fina" = "#0072B2")  # arena / intermedia / arcilla
+col_humedad <- c("70 % CRA" = "#56B4E9", "30 % CRA" = "#E69F00")             # húmedo / seco
 theme_set(theme_minimal(base_size = 13) +
             theme(plot.title = element_text(face = "bold"),
                   panel.grid.minor = element_blank()))
@@ -71,7 +72,7 @@ caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
 
 ## Los suelos urbanos guardan carbono, pero la ciudad se calienta!
 
-Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales (Edmondson et al., 2012). Sin embargo, Santiago no se calienta de forma homogénea: entre sectores de la ciudad la temperatura superficial puede diferir en más de 9 °C (Henríquez et al., 2020). Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes ubicadas en las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ (Vasenev et al., 2021).
+Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales (Edmondson et al., 2012). Sin embargo, Santiago no se calienta de forma homogénea: las diferencias de temperatura entre sectores de la ciudad pueden alcanzar 9,2°C (Henríquez et al., 2020). Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes ubicadas en las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ (Vasenev et al., 2021).
 
 Para explorar esta idea, se simularon datos de 120 áreas verdes de Santiago, distribuidas en cinco quintiles de temperatura superficial de verano (de Q1, el más fresco, a Q5, el más cálido), tres tipos de cobertura y dos niveles de calidad de manejo.
 
@@ -116,7 +117,7 @@ ggplot(sup, aes(x = cobertura, y = cos_pct, fill = manejo)) +
   scale_fill_manual(values = col_manejo) +
   labs(title = "Un buen manejo se asocia a más carbono en todas las coberturas",
        x = NULL, y = "COS 0-10 cm (%)",
-       fill = "Calidad de manejo", colour = "Calidad de manejo") +
+       fill = "Calidad de manejo") +
   theme(legend.position = "top")
 ```
 
@@ -164,7 +165,7 @@ ggplot(rm_resumen, aes(x = temp_incubacion_c, y = media, colour = humedad)) +
   geom_line(linewidth = 1) +
   geom_pointrange(aes(ymin = media - 1.96 * ee, ymax = media + 1.96 * ee),
                   size = 0.6) +
-  scale_colour_manual(values = c("70 % CRA" = "#0072B2", "30 % CRA" = "#D55E00")) +
+  scale_colour_manual(values = col_humedad) +
   scale_x_continuous(breaks = c(20, 30, 40)) +
   labs(title = "Si hay agua, el calor dispara la respiración",
        x = "Temperatura de incubación (°C)",
@@ -180,16 +181,16 @@ n_sat <- resp |>
 
 La respiración microbiana del suelo tiende a aumentar con la temperatura, con un Q~10~ típicamente cercano a 2 (Lloyd & Taylor, 1994; Davidson & Janssens, 2006), aunque esta respuesta depende de la disponibilidad de agua en el suelo (Davidson et al., 1998; Moyano et al., 2013). Este resultado ofrece un mecanismo para la figura de los quintiles, ya que mientras más calor, más actividad microbiana y más carbono que se pierde como CO~2~. En una ciudad donde las áreas verdes se riegan, el riego podría intensificar este efecto.
 
-A 40 °C y 70 % CRA, `r n_sat` mediciones saturaron la placa de MicroResp y quedaron como datos faltantes (MNAR). Como faltan justamente los valores más altos, el promedio de ese tratamiento está subestimado.
+A 40°C y 70% CRA, `r n_sat` mediciones saturaron la placa de MicroResp y quedaron como datos faltantes (MNAR). Como faltan justamente los valores más altos, el promedio de ese tratamiento está subestimado.
 
 ## En resumen y próximos pasos
 
 En estos datos simulados, las áreas verdes ubicadas en las zonas más cálidas de Santiago tienen menos carbono en sus suelos, y la respiración microbiana aumenta fuertemente con la temperatura. Pero la calidad del manejo, el tipo de cobertura y la textura del suelo también modifican cuánto carbono se almacena.
-Por tratarse de una simulación, los datos deben ser entendidos como demuestración. Se espera que los resultados reales, tras los terrenos y los anális de datos, sean mucho más complejos.
+Por tratarse de una simulación, los datos deben ser entendidos como demostración. Se espera que los resultados reales, tras los terrenos y los análisis de datos, sean mucho más complejos.
 
 Próximos pasos:
 
-- Ajustar modelos (regresión múltiple / GLM) que evalúen el efecto de la temperatura controlando por manejo, cobertura y textura, incluyendo la interacción temperatura vs. textura.
+- Ajustar modelos (regresión múltiple/GLM) que evalúen el efecto de la temperatura controlando por manejo, cobertura y textura, incluyendo la interacción temperatura × textura.
 - Incorporar un mapa de los sitios sobre Santiago cuando estén las coordenadas reales (en la simulación, las coordenadas son aleatorias y no tienen patrón espacial).
 - Reemplazar los datos simulados por los de terreno y laboratorio, manteniendo la misma estructura de tablas.
 

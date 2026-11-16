@@ -8,14 +8,14 @@
 # que los tratamientos sí se diferencien y el EDA tenga algo que mostrar.
 # También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
 
-library(dplyr)
-library(tidyr)
-library(readr)
+library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
+library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos
+library(readr) #leer archivos excel
 
 set.seed(2026)
 dir.create("datos", showWarnings = FALSE)
 
-acotar <- function(x, min, max) pmin(pmax(x, min), max)
+acotar <- function(x, min, max) pmin(pmax(x, min), max) #impide valores absurdos
 
 # 1. Diseño estratificado: 3 coberturas x 2 manejos x 5 quintiles x 4 = 120
 base <- expand_grid(
@@ -27,10 +27,10 @@ base <- expand_grid(
   slice_sample(prop = 1) |>
   mutate(sitio_id = sprintf("S%03d", row_number()))
 
-n <- nrow(base)
+n <- nrow(base) #cuenta cuantas lineas de base la tabla tiene (120)
 
 # 2. Variables a nivel de sitio (incluye variables "verdaderas" latentes)
-base <- base |>
+base <- base |> #la base ahora es "base" con nuevas columnas
   mutate(
     quintil_icu    = paste0("Q", q),
     fecha_muestreo = as.Date("2026-11-02") + sample(0:117, n, replace = TRUE),
@@ -68,7 +68,7 @@ base <- base |>
 
 # 3. Datos por sitio x profundidad
 perfil <- base |>
-  crossing(profundidad_cm = c("0-10", "10-20")) |>
+  crossing(profundidad_cm = c("0-10", "10-20")) |> #el crossing combina cada linea de la base con las 2 profundidades
   mutate(
     prof2 = profundidad_cm == "10-20",
     m = n(),
@@ -143,3 +143,31 @@ perfil <- perfil |>
 resp <- resp |>
   mutate(rm_ug_co2c_g_h = if_else(rm_ug_co2c_g_h > 4.5 | runif(n()) < 0.02,
                                   NA_real_, rm_ug_co2c_g_h))
+
+# 6. Guardar (fechas en ISO) --------------------------------
+base |>
+  select(sitio_id, fecha_muestreo, latitud, longitud, tipo_cobertura,
+         manejo, quintil_icu, lst_verano_c, ndvi, ndmi) |>
+  arrange(sitio_id) |>
+  write_csv("datos/sitios.csv")
+
+base |>
+  select(sitio_id, cone_index_mpa, humedad_vol_m3_m3, temp_suelo_c, ce_ds_m) |>
+  arrange(sitio_id) |>
+  write_csv("datos/suelo_terreno.csv", na = "NA")
+
+perfil |>
+  select(sitio_id, profundidad_cm, arena_pct, limo_pct, arcilla_pct,
+         fragmentos_rocosos_pct, da_g_cm3, estabilidad_agregados_pct) |>
+  arrange(sitio_id, profundidad_cm) |>
+  write_csv("datos/suelo_fisica.csv", na = "NA")
+
+perfil |>
+  select(sitio_id, profundidad_cm, cos_pct, cop_pct, coam_pct) |>
+  arrange(sitio_id, profundidad_cm) |>
+  write_csv("datos/suelo_carbono.csv", na = "NA")
+
+resp |>
+  select(sitio_id, temp_incubacion_c, humedad_cra_pct, replica, rm_ug_co2c_g_h) |>
+  arrange(sitio_id, temp_incubacion_c, humedad_cra_pct, replica) |>
+  write_csv("datos/suelo_respiracion.csv", na = "NA")

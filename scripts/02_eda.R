@@ -6,6 +6,15 @@ library(naniar)
 
 dir.create("figuras", showWarnings = FALSE)
 
+# Paleta Okabe-Ito (apta para daltonismo), con colores sugestivos
+col_manejo  <- c("bueno" = "#009E73",       # verde: buen manejo
+                 "deficiente" = "#D55E00")  # bermellón: manejo deficiente
+col_textura <- c("gruesa" = "#E69F00",      # naranja: arena
+                 "media"  = "#CC79A7",      # rosado: intermedia
+                 "fina"   = "#0072B2")      # azul: arcilla (retiene agua)
+col_humedad <- c("30" = "#E69F00",          # naranja: suelo seco
+                 "70" = "#56B4E9")          # celeste: suelo húmedo
+
 # 1. Leer datos ------------------------------------------------------------
 sitios  <- read_csv("datos/sitios.csv")
 terreno <- read_csv("datos/suelo_terreno.csv")
@@ -53,6 +62,7 @@ suelo |>
 g01 <- ggplot(suelo, aes(x = tipo_cobertura, y = cos_pct, fill = manejo)) +
   geom_boxplot(na.rm = TRUE) +
   facet_wrap(~ profundidad_cm, labeller = label_both) +
+  scale_fill_manual(values = col_manejo) +
   labs(x = "Tipo de cobertura", y = "COS (%)", fill = "Manejo") +
   theme_bw()
 ggsave("figuras/01_cos_cobertura_manejo.png", g01, width = 8, height = 4.5)
@@ -62,7 +72,9 @@ g02 <- suelo |>
   filter(profundidad_cm == "0-10") |>
   ggplot(aes(x = lst_verano_c, y = cos_pct, colour = textura_grupo)) +
   geom_point(alpha = 0.7, na.rm = TRUE) +
-  geom_smooth(method = "lm", se = TRUE, na.rm = TRUE) +
+  geom_smooth(aes(fill = textura_grupo), method = "lm", se = TRUE, na.rm = TRUE) +
+  scale_colour_manual(values = col_textura) +
+  scale_fill_manual(values = col_textura, guide = "none") +
   labs(x = "Temperatura superficial en verano (°C)", y = "COS 0-10 cm (%)",
        colour = "Textura") +
   theme_bw()
@@ -77,6 +89,7 @@ g03 <- resp |>
              fill = factor(humedad_cra_pct))) +
   geom_boxplot(na.rm = TRUE) +
   facet_wrap(~ quintil_icu, nrow = 1) +
+  scale_fill_manual(values = col_humedad) +
   labs(x = "Temperatura de incubación (°C)",
        y = expression("RM (µg CO"[2]*"-C g"^-1*" h"^-1*")"),
        fill = "Humedad (% CRA)") +
@@ -94,6 +107,7 @@ ggsave("figuras/04_na_mapa_suelo.png", g04, width = 13, height = 5)
 # ¿La DA falta al azar? Se ve que falta solo con muchos fragmentos rocosos (MAR)
 g05 <- ggplot(suelo, aes(x = fragmentos_rocosos_pct, y = da_g_cm3)) +
   geom_miss_point() +
+  scale_colour_manual(values = c("Missing" = "#D55E00", "Not Missing" = "grey50")) +
   labs(x = "Fragmentos rocosos (%)", y = expression("DA (g cm"^-3*")")) +
   theme_bw()
 ggsave("figuras/05_na_da_fragmentos.png", g05, width = 6, height = 4.5)
