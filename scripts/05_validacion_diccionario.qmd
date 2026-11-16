@@ -1,0 +1,83 @@
+---
+title: "Actividad 10: Validación y diccionarios"
+subtitle: "Mini diccionario y función de validación (utilizando mis datos simulados)"
+author: "Mariana dos Santos Moreno"
+lang: es
+format:
+  html:
+    embed-resources: true
+    code-fold: false
+execute:
+  warning: false
+  message: false
+---
+
+> Los datos fueron simulados con `scripts/01_simular_datos.R`, así que no son resultados reales.
+
+```{r}
+library(tidyverse)
+
+sitios  <- read_csv("../datos/sitios.csv")
+terreno <- read_csv("../datos/suelo_terreno.csv")
+carbono <- read_csv("../datos/suelo_carbono.csv")
+
+# Tabla de análisis (una fila = sitio x profundidad)
+suelo <- carbono |>
+  left_join(sitios,  by = "sitio_id") |>
+  left_join(terreno, by = "sitio_id")
+```
+
+## 1. Mini diccionario (3 variables)
+
+```{r}
+diccionario <- tribble(
+  ~variable,         ~tipo,        ~unidad, ~valores_esperados,
+  "tipo_cobertura",  "categórica", "-",     "parque_cesped, borde_carretera, bosque_urbano (sin NA)",
+  "cos_pct",         "numérica",   "%",     "0-15 (NA permitido)",
+  "cone_index_mpa",  "numérica",   "MPa",   "0-5 (NA permitido)"
+)
+
+knitr::kable(diccionario)
+```
+
+El tipo de cobertura es parte del diseño del muestreo (3 coberturas × 2 manejos × 5 quintiles), por eso todos los sitios deben tenerlo y no se permiten NA. El COS no puede ser negativo y, en suelos minerales de áreas verdes, valores sobre 15% indicarían un error de digitación o un horizonte orgánico que no forma parte del muestreo. Se permiten NA porque cerca del 3% de las muestras se pierden en el laboratorio (MCAR). La resistencia a la penetración tiene como límite el rango del penetrómetro (5 MPa). Los suelos más compactados quedan como NA (MNAR), así que un valor sobre 5 MPa sería imposible en estos datos.
+
+## 2. Función de validación
+
+```{r}
+validar_suelos <- function(datos) {
+  # Estructural: cobertura válida y sin NA
+  cobertura_ok <- all(datos$tipo_cobertura %in%
+                        c("parque_cesped", "borde_carretera", "bosque_urbano"))
+
+  # Contenido: COS entre 0 y 15% (NA permitido)
+  cos_ok <- all(datos$cos_pct >= 0 & datos$cos_pct <= 15, na.rm = TRUE)
+
+  # Contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)
+  cone_ok <- all(datos$cone_index_mpa >= 0 & datos$cone_index_mpa <= 5,
+                 na.rm = TRUE)
+
+  marca <- function(x) ifelse(isTRUE(x), "OK", "FALLA")
+
+  cat("Cobertura válida (estructural): ", marca(cobertura_ok), "\n")
+  cat("COS 0-15 % (contenido):         ", marca(cos_ok),       "\n")
+  cat("Penetrómetro 0-5 MPa (contenido):", marca(cone_ok),     "\n")
+}
+
+validar_suelos(suelo)
+```
+
+## 3. Prueba con errores introducidos a propósito
+
+Para comprobar que la función detecta problemas, se modifica una copia de los datos:
+
+```{r}
+suelo_mal <- suelo
+suelo_mal$tipo_cobertura[3] <- "plaza"   # categoría que no está en el diseño
+suelo_mal$cos_pct[5]        <- -0.8      # COS negativo
+suelo_mal$cone_index_mpa[7] <- 6.2       # sobre el límite del penetrómetro
+
+validar_suelos(suelo_mal)
+```
+
+Con los datos simulados las tres validaciones dan OK. Con la copia modificada, las tres dan FALLA. Cuando lleguen los datos de terreno y laboratorio, esta función se puede correr antes de cada análisis.
