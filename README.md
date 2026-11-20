@@ -2,7 +2,7 @@
 
 > Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
-Proyecto final del curso *Visualización de datos medioambientales con R*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
+Proyecto final del curso *Visualización de datos medioambientales con R (*AGP3141-1), basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
 
 ## Preguntas exploratorias
 
@@ -20,25 +20,25 @@ Proyecto final del curso *Visualización de datos medioambientales con R*, basad
 5.  Renderizar los informes de `scripts/` con Quarto (leen los datos desde `../datos/`):
     - `03_informe_borrador.qmd`: borrador del proyecto final.
     - `04_group_by_nest.qmd`: Actividad 9, Q^10^ de la respiración por sitio con `nest()` + `map()` + `broom`.
-    - `05_validacion_diccionario.qmd`: Actividad 10, mini diccionario y función de validación de tres variables.
+    - `05_validacion_diccionario.qmd`: Actividad 10, mini diccionario y función de validación de 3 variables.
 
 ## Estructura
 
 ```         
 cos_suelos_urbanos_santiago/
-├── datos/      # tablas en formato ordenado (tidy), una por tipo de dato
+├── datos/      #tablas en formato ordenado (tidy), una por tipo de dato
 ├── scripts/
-│   ├── 01_simular_datos.R       # genera los datos simulados
-│   ├── 02_eda.R                 # análisis exploratorio y datos ausentes
-│   ├── 03_informe_borrador.qmd  # borrador del proyecto final (storytelling)
-│   ├── 03_informe_borrador.html # informe renderizado
-│   ├── 04_group_by_nest.qmd     # Actividad 9: un modelo por sitio (Q10)
-│   ├── 04_group_by_nest.html    # actividad renderizada
-│   ├── 05_validacion_diccionario.qmd   # Actividad 10: diccionario y validación
-│   └── 05_validacion_diccionario.html  # actividad renderizada
-├── figuras/    # salidas exploratorias del EDA, numeradas 01_, 02_, ...
-├── renv/ y renv.lock            # entorno reproducible de paquetes (renv)
-├── doctorado_cos_suelos_urbanos_santiago.Rproj   # proyecto de RStudio
+│   ├── 01_simular_datos.R       #genera los datos simulados
+│   ├── 02_eda.R                 #análisis exploratorio y datos ausentes
+│   ├── 03_informe_borrador.qmd  #borrador del proyecto final (storytelling)
+│   ├── 03_informe_borrador.html #informe renderizado
+│   ├── 04_group_by_nest.qmd     #actividad 9: un modelo por sitio (Q10)
+│   ├── 04_group_by_nest.html    #actividad renderizada
+│   ├── 05_validacion_diccionario.qmd   #actividad 10: diccionario y validación
+│   └── 05_validacion_diccionario.html  #actividad renderizada
+├── figuras/    #salidas exploratorias del EDA, numeradas 01_, 02_, ...
+├── renv/ y renv.lock            #entorno reproducible de paquetes (renv)
+├── doctorado_cos_suelos_urbanos_santiago.Rproj   #proyecto de RStudio
 ├── .gitignore
 └── README.md
 ```
@@ -89,8 +89,8 @@ Rangos físicamente plausibles para suelos minerales de áreas verdes de Santiag
 
 | Variable | Mecanismo | Causa simulada |
 |------------------------|------------------------|------------------------|
-| `cos_pct`, `cop_pct`, `coam_pct` | MCAR | \~3 % de muestras extraviadas (etiqueta o bolsa perdida) |
-| `rm_ug_co2c_g_h` | MCAR | \~2 % de pocillos contaminados o con burbujas |
-| `da_g_cm3` | MAR | con \> 20 % de fragmentos rocosos el cilindro no entra |
+| `cos_pct`, `cop_pct`, `coam_pct` | MCAR | \~3% de muestras extraviadas (etiqueta o bolsa perdida) |
+| `rm_ug_co2c_g_h` | MCAR | \~2% de pocillos contaminados o con burbujas |
+| `da_g_cm3` | MAR | con \> 20% de fragmentos rocosos el cilindro no entra |
 | `cone_index_mpa` | MNAR | el penetrómetro no mide sobre 5 MPa |
 | `rm_ug_co2c_g_h` | MNAR | la placa MicroResp se satura con respiración muy alta |

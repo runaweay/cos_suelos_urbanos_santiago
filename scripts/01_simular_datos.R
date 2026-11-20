@@ -1,12 +1,12 @@
-# 01_simular_datos.R ------------------------------------------------------
-# Simula datos plausibles para el proyecto de tesis:
-# "Influencia del microclima térmico y las propiedades físicas en la
-#  dinámica del carbono en suelos urbanos de Santiago de Chile"
+#01_simular_datos.R ------------------------------------------------------
+#Simula datos plausibles para el proyecto de tesis:
+#"Influencia del microclima térmico y las propiedades físicas en la
+# dinámica del carbono en suelos urbanos de Santiago de Chile"
 #
-# Los datos NO son reales: se generan con efectos definidos a partir de la
+#Los datos NO son reales: se generan con efectos definidos a partir de la
 # hipótesis (ICU, textura, manejo y cobertura afectan COS, COAM y RM), para
 # que los tratamientos sí se diferencien y el EDA tenga algo que mostrar.
-# También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
+#También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
 
 library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
 library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos
@@ -17,7 +17,7 @@ dir.create("datos", showWarnings = FALSE)
 
 acotar <- function(x, min, max) pmin(pmax(x, min), max) #impide valores absurdos
 
-# 1. Diseño estratificado: 3 coberturas x 2 manejos x 5 quintiles x 4 = 120
+#1. Diseño estratificado: 3 coberturas x 2 manejos x 5 quintiles x 4 = 120
 base <- expand_grid(
   tipo_cobertura = c("parque_cesped", "borde_carretera", "bosque_urbano"),
   manejo         = c("bueno", "deficiente"),
@@ -29,7 +29,7 @@ base <- expand_grid(
 
 n <- nrow(base) #cuenta cuantas lineas de base la tabla tiene (120)
 
-# 2. Variables a nivel de sitio (incluye variables "verdaderas" latentes)
+#2. Variables a nivel de sitio (incluye variables "verdaderas" latentes)
 base <- base |> #la base ahora es "base" con nuevas columnas
   mutate(
     quintil_icu    = paste0("Q", q),
@@ -66,7 +66,7 @@ base <- base |> #la base ahora es "base" con nuevas columnas
                            0.05, 4), 2)
   )
 
-# 3. Datos por sitio x profundidad
+#3. Datos por sitio x profundidad
 perfil <- base |>
   crossing(profundidad_cm = c("0-10", "10-20")) |> #el crossing combina cada linea de la base con las 2 profundidades
   mutate(
@@ -102,7 +102,7 @@ perfil <- base |>
         rnorm(m, 0, 6), 10, 95), 1)
   )
 
-# 4. Respiración microbiana (MicroResp), solo 0-10 cm
+#4. Respiración microbiana (MicroResp), solo 0-10 cm
 resp <- perfil |>
   filter(profundidad_cm == "0-10") |>
   mutate(basal = 0.35 * cos_pct^0.9 * exp(0.10 * (q - 3)) *
@@ -121,13 +121,13 @@ resp <- perfil |>
                              rlnorm(n(), 0, 0.08), 3)
   )
 
-# 5. Introducir datos ausentes ------------------------------------------------
-# MNAR: el penetrómetro no supera 5 MPa -> los suelos más compactados quedan NA
+#5. Introducir datos ausentes ------------------------------------------------
+#MNAR = el penetrómetro no supera 5 MPa -> los suelos más compactados quedan NA
 base <- base |>
   mutate(cone_index_mpa = if_else(cone_real > 5, NA_real_, round(cone_real, 2)))
 
-# MAR: con muchos fragmentos rocosos (>20 %) el cilindro no entra -> DA faltante
-# MCAR: ~3 % de las muestras de carbono se pierden (etiqueta/bolsa extraviada)
+#MAR = con muchos fragmentos rocosos (>20 %) el cilindro no entra -> DA faltante
+#MCAR = ~3 % de las muestras de carbono se pierden (etiqueta/bolsa extraviada)
 perfil <- perfil |>
   mutate(
     da_g_cm3 = if_else(fragmentos_rocosos_pct > 20 & runif(n()) < 0.8,
@@ -138,13 +138,13 @@ perfil <- perfil |>
     coam_pct = if_else(perdida, NA_real_, coam_pct)
   )
 
-# MNAR: la placa MicroResp se satura con respiración muy alta (> 4.5)
-# MCAR: ~2 % de pocillos contaminados o con burbujas
+#MNAR = la placa MicroResp se satura con respiración muy alta (> 4.5)
+#MCAR = ~2 % de pocillos contaminados o con burbujas
 resp <- resp |>
   mutate(rm_ug_co2c_g_h = if_else(rm_ug_co2c_g_h > 4.5 | runif(n()) < 0.02,
                                   NA_real_, rm_ug_co2c_g_h))
 
-# 6. Guardar (fechas en ISO) --------------------------------
+#6. Guardar (fechas en ISO) --------------------------------
 base |>
   select(sitio_id, fecha_muestreo, latitud, longitud, tipo_cobertura,
          manejo, quintil_icu, lst_verano_c, ndvi, ndmi) |>
