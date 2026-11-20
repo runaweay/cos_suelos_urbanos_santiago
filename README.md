@@ -1,6 +1,6 @@
 # Influencia de las islas de calor en el carbono de los suelos urbanos de Santiago
 
-> Proyecto final del curso *Visualización de datos medioambientales con R (*AGP3141-1), basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
+> Proyecto final del curso *Visualización de datos medioambientales con R (AGP3141-1)*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
 >
 > Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
