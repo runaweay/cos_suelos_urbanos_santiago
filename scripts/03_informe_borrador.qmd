@@ -72,18 +72,18 @@ suelo <- fisica |>
     textura = factor(textura, levels = c("Gruesa", "Media", "Fina"))
   )
 
-sup  <- suelo |> filter(profundidad_cm == "0-10")    # capa superficial
-prof <- suelo |> filter(profundidad_cm == "10-20")   # capa profunda
+sup  <- suelo |> filter(profundidad_cm == "0-10")    #capa superficial
+prof <- suelo |> filter(profundidad_cm == "10-20")   #capa profunda
 
-# Paleta Okabe-Ito (apta para daltonismo) y tema común a todas las figuras
-col_manejo  <- c("Bueno" = "#009E73", "Deficiente" = "#D55E00")              # verde / bermellón
-col_textura <- c("Gruesa" = "#E69F00", "Media" = "#CC79A7", "Fina" = "#0072B2")  # arena / intermedia / arcilla
-col_humedad <- c("70 % CRA" = "#56B4E9", "30 % CRA" = "#E69F00")             # húmedo / seco
+#Paleta Okabe-Ito (apta para daltonismo) y tema común a todas las figuras
+col_manejo  <- c("Bueno" = "#009E73", "Deficiente" = "#D55E00")              # verde/bermellón
+col_textura <- c("Gruesa" = "#E69F00", "Media" = "#CC79A7", "Fina" = "#0072B2")  # arena/intermedia/arcilla
+col_humedad <- c("70 % CRA" = "#56B4E9", "30 % CRA" = "#E69F00")             #húmedo/seco
 theme_set(theme_minimal(base_size = 13, base_family = "Arial") +
             theme(plot.title = element_text(face = "bold"),
                   panel.grid.minor = element_blank()))
 
-#Números que se citan en el texto
+#Números citados en el texto
 cos_q <- sup |>
   group_by(quintil_icu) |>
   summarise(media = mean(cos_pct, na.rm = TRUE),
@@ -277,7 +277,7 @@ Por tratarse de una simulación, los datos deben ser entendidos como demostraci�
 
 Próximos pasos:
 
-- Ajustar modelos (regresión múltiple/GLM) que evalúen el efecto de la temperatura controlando por manejo, cobertura y textura, incluyendo la interacción temperatura × textura.
+- Ajustar modelos (regresión múltiple/GLM) que evalúen el efecto de la temperatura controlado por manejo, cobertura y textura, incluyendo la interacción temperatura × textura.
 - Incorporar un mapa de los sitios sobre Santiago cuando estén las coordenadas reales (en la simulación, las coordenadas son aleatorias y no tienen patrón espacial).
 - Reemplazar los datos simulados por los de terreno y laboratorio, manteniendo la misma estructura de tablas.
 
