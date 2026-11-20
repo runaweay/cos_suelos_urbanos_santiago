@@ -7,13 +7,13 @@ library(naniar)
 dir.create("figuras", showWarnings = FALSE)
 
 #Paleta Okabe-Ito (apta para daltonismo), con colores sugestivos
-col_manejo  <- c("bueno" = "#009E73",       # verde: buen manejo
-                 "deficiente" = "#D55E00")  # bermellón: manejo deficiente
-col_textura <- c("gruesa" = "#E69F00",      # naranja: arena
-                 "media"  = "#CC79A7",      # rosado: intermedia
-                 "fina"   = "#0072B2")      # azul: arcilla (retiene agua)
-col_humedad <- c("30" = "#E69F00",          # naranja: suelo seco
-                 "70" = "#56B4E9")          # celeste: suelo húmedo
+col_manejo  <- c("bueno" = "#009E73",       #verde = buen manejo
+                 "deficiente" = "#D55E00")  #bermellón = manejo deficiente
+col_textura <- c("gruesa" = "#E69F00",      #naranja = arena
+                 "media"  = "#CC79A7",      #rosado = intermedia
+                 "fina"   = "#0072B2")      #azul = arcilla (retiene agua)
+col_humedad <- c("30" = "#E69F00",          #naranja = suelo seco
+                 "70" = "#56B4E9")          #celeste = suelo húmedo
 
 #1. Leer datos ------------------------------------------------------------
 sitios  <- read_csv("datos/sitios.csv")
