@@ -3,10 +3,13 @@
 #"Influencia del microclima térmico y las propiedades físicas en la
 # dinámica del carbono en suelos urbanos de Santiago de Chile"
 #
-#Los datos NO son reales: se generan con efectos definidos a partir de la
+#Los datos NO son reales y se generan con efectos definidos a partir de la
 # hipótesis (ICU, textura, manejo y cobertura afectan COS, COAM y RM), para
 # que los tratamientos sí se diferencien y el EDA tenga algo que mostrar.
 #También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
+
+#Generado con ayuda de Claude (Anthropic). El pedido y los elementos
+#del proyecto utilizados están descritos en el README.
 
 library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
 library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos

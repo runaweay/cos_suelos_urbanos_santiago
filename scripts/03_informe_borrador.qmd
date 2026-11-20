@@ -6,7 +6,7 @@ date: last-modified
 date-format: long
 lang: es
 params:
-  cobertura: "todas"   # o "bosque_urbano", "parque_cesped", "borde_carretera"
+  cobertura: "todas"   #o "bosque_urbano", "parque_cesped", "borde_carretera"
 format:
   html:
     toc: true
@@ -15,7 +15,7 @@ format:
     embed-resources: true
     lightbox: true
   docx:
-    echo: false        # versión para leer sin código
+    echo: false        #versión para leer sin código
 bibliography: referencias.bib
 execute:
   warning: false
@@ -46,7 +46,7 @@ fisica  <- read_csv("../datos/suelo_fisica.csv")
 carbono <- read_csv("../datos/suelo_carbono.csv")
 resp    <- read_csv("../datos/suelo_respiracion.csv")
 
-# Parámetro: permite generar el informe para una sola cobertura
+#Parámetro: permite generar el informe para una sola cobertura
 if (params$cobertura != "todas") {
   sitios <- sitios |> filter(tipo_cobertura == params$cobertura)
   resp   <- resp   |> filter(sitio_id %in% sitios$sitio_id)
@@ -54,7 +54,7 @@ if (params$cobertura != "todas") {
 }
 n_sitios <- nrow(sitios)
 
-# Tabla de análisis: una fila = sitio x profundidad, con etiquetas legibles
+#Tabla de análisis: una fila = sitio x profundidad, con etiquetas legibles
 suelo <- fisica |>
   left_join(carbono, by = c("sitio_id", "profundidad_cm")) |>
   left_join(sitios,  by = "sitio_id") |>
@@ -83,7 +83,7 @@ theme_set(theme_minimal(base_size = 13, base_family = "Arial") +
             theme(plot.title = element_text(face = "bold"),
                   panel.grid.minor = element_blank()))
 
-# Números que se citan en el texto
+#Números que se citan en el texto
 cos_q <- sup |>
   group_by(quintil_icu) |>
   summarise(media = mean(cos_pct, na.rm = TRUE),
@@ -96,7 +96,7 @@ caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
 
 ## Los suelos urbanos guardan carbono, pero la ciudad se calienta!
 
-Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales [@edmondson2012]. Sin embargo, Santiago no se calienta de forma homogénea: las diferencias de temperatura entre sectores de la ciudad pueden alcanzar 9,2 °C [@henriquez2020]. Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes ubicadas en las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ [@vasenev2021].
+Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales [@edmondson2012]. Sin embargo, Santiago no se calienta de forma homogénea, sino que las diferencias de temperatura entre sectores de la ciudad pueden alcanzar 9,2 °C [@henriquez2020]. Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes ubicadas en las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ [@vasenev2021].
 
 Para explorar esta idea, se simularon datos de `r n_sitios` áreas verdes de Santiago, distribuidas en cinco quintiles de temperatura superficial de verano (de Q1, el más fresco, a Q5, el más cálido), tres tipos de cobertura y dos niveles de calidad de manejo.
 
@@ -104,7 +104,7 @@ Para explorar esta idea, se simularon datos de `r n_sitios` áreas verdes de San
 **Glosario**
 
 - **COS:** carbono orgánico del suelo.
-- **COP / COAM:** carbono orgánico particulado (más lábil) y asociado a minerales (más protegido).
+- **COP/COAM:** carbono orgánico particulado (más lábil) y asociado a minerales (más protegido).
 - **ICU:** isla de calor urbana.
 - **Q10:** cuántas veces aumenta la respiración con 10 °C más.
 - **CRA:** capacidad de retención de agua.
@@ -191,10 +191,10 @@ En los tres tipos de cobertura y en ambas profundidades, los sitios con buen man
 ```{r}
 #| label: fig-cos-textura
 #| fig-alt: "Tres paneles, uno por textura, con el COS bajando a medida que aumenta la temperatura superficial."
-#| fig-cap: "Relación entre la temperatura superficial de verano y el COS (0-10 cm) para cada grupo de textura. Las líneas son regresiones lineales y las bandas, su intervalo de confianza del 95%. Textura gruesa: arena ≥ 55%; fina: arcilla ≥ 30%."
+#| fig-cap: "Relación entre la temperatura superficial de verano y el COS (0-10 cm) para cada grupo de textura. Las líneas son regresiones lineales y las bandas, su intervalo de confianza del 95%. Textura gruesa = arena ≥ 55%; fina = arcilla ≥ 30%."
 #| fig-width: 9
 #| fig-height: 5
-# Rangos de los ejes fijados a partir de los datos, para que plotly no corte puntos
+#Rangos de los ejes fijados a partir de los datos, para que plotly no corte puntos
 xr <- range(sup$lst_verano_c, na.rm = TRUE) + c(-0.3, 0.3)
 yr <- range(sup$cos_pct, na.rm = TRUE) + c(-0.2, 0.2)
 
@@ -210,11 +210,11 @@ g_textura <- ggplot(sup, aes(x = lst_verano_c, y = cos_pct, colour = textura)) +
        x = "Temperatura superficial de verano (°C)",
        y = "COS 0-10 cm (%)")
 
-# Interactivo en HTML; imagen fija en Word
+#Interactivo en HTML, imagen fija en Word
 if (knitr::is_html_output()) {
   ggplotly(g_textura, tooltip = c("text", "x", "y")) |>
     layout(font = list(family = "Arial"),
-           title = list(text = "<b>Los suelos finos tienen más carbono, pero también pierden más con el calor</b>",
+           title = list(text = "<b>Los suelos 'finos' tienen más carbono, pero también pierden más con el calor</b>",
                         font = list(size = 16), x = 0, xref = "paper", xanchor = "left"),
            margin = list(t = 70))
 } else {
@@ -222,7 +222,7 @@ if (knitr::is_html_output()) {
 }
 ```
 
-En la @fig-cos-textura (interactiva: pasa el mouse sobre un punto para ver el sitio), los suelos de textura fina almacenan más carbono, como se espera por su mayor capacidad de estabilizarlo [@cotrufo2022]. Sin embargo, en este borrador también muestran la mayor caída con la temperatura y, por lo tanto, hay que interpretar este patrón con cautela, ya que hay pocos sitios de textura fina, y la banda de confianza es amplia.
+En la @fig-cos-textura (interactiva, pasa el mouse sobre un punto para ver el sitio), los suelos de textura fina almacenan más carbono, como se espera por su mayor capacidad de estabilizarlo [@cotrufo2022]. Sin embargo, en este borrador también muestran la mayor caída con la temperatura y, por lo tanto, hay que interpretar este patrón con cautela, ya que hay pocos sitios de textura fina, y la banda de confianza es amplia.
 
 ## Por qué? Los microorganismos respiran más con calor!
 
@@ -261,7 +261,7 @@ n_sat <- resp |>
   pull(n)
 ```
 
-La respiración microbiana del suelo tiende a aumentar con la temperatura, con un Q~10~ típicamente cercano a 2 [@lloyd1994; @davidson2006], aunque esta respuesta depende de la disponibilidad de agua en el suelo [@davidson1998; @moyano2013]. Este resultado (@fig-rm) ofrece un mecanismo para la figura de los quintiles, ya que mientras más calor, más actividad microbiana y más carbono que se pierde como CO~2~. En una ciudad donde las áreas verdes se riegan, el riego podría intensificar este efecto.
+La respiración microbiana del suelo tiende a aumentar con la temperatura, con un Q~10~ típicamente cercano a 2 [@lloyd1994; @davidson2006], aunque esta respuesta depende de la disponibilidad de agua en el suelo [@davidson1998; @moyano2013]. Este resultado ofrece un mecanismo para la figura de los quintiles, ya que mientras más calor, más actividad microbiana y más carbono que se pierde como CO~2~. En una ciudad donde las áreas verdes se riegan, el riego podría intensificar este efecto.
 
 A 40 °C y 70% CRA, `r n_sat` mediciones saturaron la placa de MicroResp y quedaron como datos faltantes (MNAR). Como faltan justamente los valores más altos, el promedio de ese tratamiento está subestimado.
 

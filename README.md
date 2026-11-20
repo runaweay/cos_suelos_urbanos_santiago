@@ -1,8 +1,20 @@
 # Influencia de las islas de calor en el carbono de los suelos urbanos de Santiago
 
+> Proyecto final del curso *Visualización de datos medioambientales con R (*AGP3141-1), basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
+>
 > Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
 
-Proyecto final del curso *Visualización de datos medioambientales con R (*AGP3141-1), basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
+## Cómo se generaron los datos
+
+Los datos fueron generados con ayuda de Claude (Anthropic), en septiembre de 2026, a partir del siguiente pedido (traducido): "puedes ayudarme a crear los datos que necesito, basados en mi proyecto de doctorado? Como aún no hemos ido a terreno, no tengo ningún dato."
+
+Para generar los datos se usaron los siguientes elementos del proyecto de tesis:
+
+- **Diseño de muestreo**: 120 áreas verdes de Santiago, estratificadas por tipo de cobertura (parque de césped, borde de carretera y bosque urbano), calidad de manejo (bueno y deficiente) y quintil de temperatura superficial de verano (Q1 a Q5).
+- **Variables y métodos previstos**: NDVI y NDMI; compactación con penetrómetro; humedad, temperatura y conductividad eléctrica con sensor TEROS-12; textura, densidad aparente, fragmentos rocosos y estabilidad de agregados; carbono orgánico del suelo y sus fracciones (COP y COAM) a 0-10 y 10-20 cm; y respiración microbiana con MicroResp a 20, 30 y 40 °C y 30 y 70% de la capacidad de retención de agua.
+- **Hipótesis**: los suelos con mayor intensidad de la isla de calor, textura gruesa, menor NDVI/NDMI y manejo deficiente tendrían menos carbono orgánico y más respiración microbiana.
+
+A partir de eso, Claude escribió el script `scripts/01_simular_datos.R`, que genera los datos con efectos definidos según la hipótesis e introduce datos ausentes a propósito (MCAR, MAR y MNAR), para la actividad sobre datos faltantes del curso. Los valores de los efectos y de la variabilidad fueron elegidos para ser plausibles y no provienen de mediciones. Después, los efectos se ajustaron para que las diferencias entre tratamientos fueran más claras.
 
 ## Preguntas exploratorias
 
