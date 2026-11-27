@@ -9,7 +9,7 @@
 #También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
 
 #Generado con ayuda de Claude (Anthropic). El pedido y los elementos
-#del proyecto utilizados están descritos en el README.
+#del proyecto utilizados están descritos en la metodología del informe (index.qmd).
 
 library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
 library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos

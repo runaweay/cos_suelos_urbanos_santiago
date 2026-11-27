@@ -39,7 +39,7 @@ cos_suelos_urbanos_santiago/
 
 ## Data
 
-The data are composed by five raw tables (sites, field measurements, soil physics, carbon and respiration) and one processed table, all joined by `sitio_id`. Variables, units, expected ranges, simulation parameters and missing data are described in the [data dictionary](datos/README.md).
+The data are composed of five raw tables (sites, field measurements, soil physics, carbon and respiration) and one processed table, all joined by `sitio_id`. Variables, units, expected ranges, simulation parameters and missing data are described in the [data dictionary](datos/README.md).
 
 **Validation:** before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks that the data follow the dictionary (design categories and ranges of soil organic carbon and compaction). It is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
 
