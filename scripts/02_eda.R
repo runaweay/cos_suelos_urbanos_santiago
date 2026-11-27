@@ -16,11 +16,11 @@ col_humedad <- c("30" = "#E69F00",          #naranja = suelo seco
                  "70" = "#56B4E9")          #celeste = suelo húmedo
 
 #1. Leer datos ------------------------------------------------------------
-sitios  <- read_csv("datos/sitios.csv")
-terreno <- read_csv("datos/suelo_terreno.csv")
-fisica  <- read_csv("datos/suelo_fisica.csv")
-carbono <- read_csv("datos/suelo_carbono.csv")
-resp    <- read_csv("datos/suelo_respiracion.csv")
+sitios  <- read_csv("datos/crudos/sitios.csv")
+terreno <- read_csv("datos/crudos/suelo_terreno.csv")
+fisica  <- read_csv("datos/crudos/suelo_fisica.csv")
+carbono <- read_csv("datos/crudos/suelo_carbono.csv")
+resp    <- read_csv("datos/crudos/suelo_respiracion.csv")
 
 glimpse(sitios)
 summary(carbono)
@@ -32,6 +32,8 @@ suelo <- fisica |>
   left_join(terreno, by = "sitio_id") |>
   mutate(
     quintil_icu   = factor(quintil_icu, levels = paste0("Q", 1:5)),
+    #grupo de textura (ver datos/README.md): arena >= 55 % = gruesa;
+    # si no, arcilla >= 30 % = fina; el resto = media
     textura_grupo = case_when(arena_pct >= 55   ~ "gruesa",
                               arcilla_pct >= 30 ~ "fina",
                               TRUE              ~ "media"),
@@ -41,6 +43,11 @@ suelo <- fisica |>
       (1 - fragmentos_rocosos_pct / 100) / 10,
     frac_coam = coam_pct / (cop_pct + coam_pct)
   )
+
+#Guardar la tabla procesada (cruda = como sale del terreno/laboratorio;
+# procesada = tablas unidas + variables derivadas, lista para el informe)
+dir.create("datos/procesados", showWarnings = FALSE)
+write_csv(suelo, "datos/procesados/suelo_analisis.csv", na = "NA")
 
 #3. Resumenes numéricos -----------------------------------------------------
 suelo |>
