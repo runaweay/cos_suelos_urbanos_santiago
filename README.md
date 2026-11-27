@@ -11,7 +11,7 @@ Final project for the course *Visualización de datos medioambientales con R* (A
 > To see the results, go to the report (<https://runaweay.github.io/cos_suelos_urbanos_santiago/>).
 > This report (in Spanish) contains the context, the methods, the figures, the conclusions and the references.
 
-## Contents
+## 📂 Contents
 
 - [Exploratory questions](#exploratory-questions)
 - [How the data were generated](#how-the-data-were-generated)
@@ -24,14 +24,14 @@ Final project for the course *Visualización de datos medioambientales con R* (A
 - [How to cite](#how-to-cite)
 - [License](#license)
 
-## Exploratory questions
+## ❓ Exploratory questions
 
 1. Is soil organic carbon (SOC) lower in green areas located in the warmest parts of the city?
 2. Do management quality and vegetation cover modify that relationship?
 3. Does soil texture change the response of SOC to heat?
 4. Does microbial respiration increase with temperature, and does it depend on moisture?
 
-## How the data were generated
+## 🧪 How the data were generated
 
 The data were generated with the help of Claude (Anthropic) in September 2026, from the following request (translated from Portuguese): "can you help me create the data I need, based on my PhD project? Since we have not gone to the field yet, I don't have any data."
 
@@ -43,7 +43,7 @@ The following elements of the thesis project were used:
 
 From this, Claude wrote `scripts/01_simular_datos.R`, which generates the data with effects defined by the hypothesis (see [simulation parameters](#simulation-parameters)) and deliberately introduces missing data (MCAR, MAR and MNAR) for the course activity on missing data. Effect sizes and variability were chosen to be plausible and do not come from measurements. The effects were later adjusted so that differences between treatments were clearer.
 
-## Repository structure
+## 📁 Repository structure
 
 ```
 cos_suelos_urbanos_santiago/
@@ -66,11 +66,11 @@ cos_suelos_urbanos_santiago/
 └── LICENSE             #MIT (code); data and figures under CC BY 4.0
 ```
 
-## Data dictionary
+## 📖 Data dictionary
 
 All tables are joined by `sitio_id`. Dates follow ISO 8601 (YYYY-MM-DD). Missing values = `NA`.
 
-### Tables
+### ✏️ Tables
 
 | File | One row = | Variables |
 |------------------------|------------------------|------------------------|
@@ -81,7 +81,7 @@ All tables are joined by `sitio_id`. Dates follow ISO 8601 (YYYY-MM-DD). Missing
 | `crudos/suelo_respiracion.csv` | site × temperature × moisture × replicate (0-10 cm) | `temp_incubacion_c` (20, 30, 40), `humedad_cra_pct` (30, 70), `replica` (1–3), `rm_ug_co2c_g_h` |
 | `procesados/suelo_analisis.csv` | site × depth | all variables from the raw tables (except respiration) + `textura_grupo`, `stock_cos_kg_m2`, `frac_coam` |
 
-### Expected values per variable
+### 🔢 Expected values per variable
 
 Physically plausible ranges for mineral soils of green areas in Santiago. They are used to validate both the simulated data and the future field and laboratory data.
 
@@ -111,7 +111,7 @@ Physically plausible ranges for mineral soils of green areas in Santiago. They a
 | `replica` | integer | \- | 1 - 3 | no |
 | `rm_ug_co2c_g_h` | numeric | µg CO₂-C/g/h | ≥ 0 | yes (MCAR and MNAR) |
 
-### Derived variables (calculated in the scripts)
+### 🖇️ Derived variables (calculated in the scripts)
 
 | Variable | Where | Rule |
 |------------------------|------------------------|------------------------|
@@ -120,7 +120,7 @@ Physically plausible ranges for mineral soils of green areas in Santiago. They a
 | `frac_coam` | `02_eda.R` | `coam_pct` / (`cop_pct` + `coam_pct`) |
 | `q10` | `03_group_by_nest.qmd` | exp(10 × slope) of the model log(respiration) ~ temperature, per site |
 
-### Simulation parameters
+### ℹ️ Simulation parameters
 
 Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 
@@ -144,7 +144,7 @@ Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 | `estabilidad_agregados_pct` | 35% + 9 per SOC point, more with clay, less with compaction; limits 10-95% |
 | `rm_ug_co2c_g_h` | basal = 0.35 × SOC^0.9, increasing with quintile; Q10 = 2 (×1, ×2 and ×4 at 20, 30 and 40 °C); at 30% WHC ×0.55 (×0.40 at 40 °C) |
 
-### Missing data introduced on purpose
+### 💭 Missing data introduced on purpose
 
 | Variable | Mechanism | Simulated cause |
 |------------------------|------------------------|------------------------|
@@ -154,11 +154,11 @@ Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 | `cone_index_mpa` | MNAR | the penetrometer does not measure above 5 MPa |
 | `rm_ug_co2c_g_h` | MNAR | the MicroResp plate saturates with very high respiration |
 
-## Data validation
+## ✅ Data validation
 
 Before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks the data against this dictionary with an unique `sitio_id` per depth, valid `tipo_cobertura` categories and the expected ranges of `cos_pct` (0-15%) and `cone_index_mpa` (0-5 MPa). It runs at the start of the report and is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
 
-## Reproducibility
+## 🔁 Reproducibility
 
 Developed and tested with R 4.6.2 and Quarto. Package versions are recorded in `renv.lock`; the main ones are tidyverse, naniar, plotly, broom and knitr.
 
@@ -171,23 +171,23 @@ Developed and tested with R 4.6.2 and Quarto. Package versions are recorded in `
 4. Run `scripts/02_eda.R`: joins the tables, creates the processed table in `datos/procesados/` and saves the exploratory figures in `figuras/`.
 5. In the Terminal, run `quarto render`: validates the data and builds the report and the activities in `docs/`, published with GitHub Pages.
 
-## Use of artificial intelligence
+## 👾 Use of artificial intelligence
 
 I used Claude (Anthropic) to write the data simulation script, based on the design, variables and hypothesis of my thesis, and as support to review the code, organize the repository and draft texts. I reviewed and adjusted all the content, and the analysis decisions are my own.
 
-## Credits
+## 🙌 Credits
 
 - Prof. Sara Acevedo, for the course, its materials and examples.
 - Elena Lazo, whose repository [pm25_rm](https://github.com/elenalazo20/pm25_rm) served as a model for the structure.
 - Okabe-Ito colour palette, colourblind-friendly.
 - R packages: tidyverse, naniar, plotly, broom and renv; report built with Quarto.
 
-## How to cite
+## 📝 How to cite
 
 This repository is archived in Zenodo: [10.5281/zenodo.24607816](https://doi.org/10.5281/zenodo.24607816).
 
 Moreno, M. S. (2026). *Influence of urban heat islands on urban soil carbon in Santiago* (Version v1.0.0) [Software and simulated data]. Zenodo. https://doi.org/10.5281/zenodo.24607816
 
-## License
+## ⚖️ License
 
 The code is released under the [MIT License](LICENSE). The simulated data in `datos/` and the figures are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): they can be reused with credit to Mariana dos Santos Moreno (@runaweay).
