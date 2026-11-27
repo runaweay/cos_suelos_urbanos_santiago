@@ -1,5 +1,9 @@
 # Influence of urban heat islands on urban soil carbon in Santiago
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24607816.svg)](https://doi.org/10.5281/zenodo.24607816)
+
+**Author:** Mariana dos Santos Moreno (@runaweay) · **Course teacher:** Prof. Sara Acevedo (@saryace) · **License:** MIT (code), CC BY 4.0 (data and figures)
+
 Final project for the course *Visualización de datos medioambientales con R* (AGP3141-1, PUC Chile), taught by Prof. Sara Acevedo. It is based on my PhD proposal, "Influence of thermal microclimate and physical properties on carbon dynamics in urban soils of Santiago, Chile", and explores whether green areas in the warmest parts of the city store less organic carbon in their soils.
 
 **The data are simulated** and include the patterns expected from the thesis hypothesis, because field sampling has not been carried out yet (it will take place in spring-summer 2026-2027). They were generated with `scripts/01_simular_datos.R`, for practice in the course only.
@@ -17,6 +21,8 @@ Final project for the course *Visualización de datos medioambientales con R* (A
 - [Reproducibility](#reproducibility)
 - [Use of artificial intelligence](#use-of-artificial-intelligence)
 - [Credits](#credits)
+- [How to cite](#how-to-cite)
+- [License](#license)
 
 ## Exploratory questions
 
@@ -56,7 +62,8 @@ cos_suelos_urbanos_santiago/
 ├── figuras/            #exploratory figures from 02_eda.R
 ├── imagenes/           #photos used in the report
 ├── docs/               #rendered website (GitHub Pages)
-└── renv/, renv.lock    #package versions
+├── renv/, renv.lock    #package versions
+└── LICENSE             #MIT (code); data and figures under CC BY 4.0
 ```
 
 ## Data dictionary
@@ -153,10 +160,16 @@ Before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks the data
 
 ## Reproducibility
 
-1. Open `doctorado_cos_suelos_urbanos_santiago.Rproj` in RStudio.
+Developed and tested with R 4.6.2 and Quarto. Package versions are recorded in `renv.lock`; the main ones are tidyverse, naniar, plotly, broom and knitr.
+
+1. Clone the repository and open `doctorado_cos_suelos_urbanos_santiago.Rproj` in RStudio:
+   ```bash
+   git clone https://github.com/runaweay/cos_suelos_urbanos_santiago.git
+   ```
 2. Install the packages with the same versions: `renv::restore()`.
-3. Run `scripts/01_simular_datos.R` (raw data, fixed seed `set.seed(2026)`, so the data are always the same) and then `scripts/02_eda.R` (processed table and exploratory figures).
-4. In the Terminal: `quarto render` (builds the website in `docs/`).
+3. Run `scripts/01_simular_datos.R`: creates the five raw tables in `datos/crudos/` (fixed seed `set.seed(2026)`, so the data are always the same).
+4. Run `scripts/02_eda.R`: joins the tables, creates the processed table in `datos/procesados/` and saves the exploratory figures in `figuras/`.
+5. In the Terminal, run `quarto render`: validates the data and builds the report and the activities in `docs/`, published with GitHub Pages.
 
 ## Use of artificial intelligence
 
@@ -168,3 +181,13 @@ I used Claude (Anthropic) to write the data simulation script, based on the desi
 - Elena Lazo, whose repository [pm25_rm](https://github.com/elenalazo20/pm25_rm) served as a model for the structure.
 - Okabe-Ito colour palette, colourblind-friendly.
 - R packages: tidyverse, naniar, plotly, broom and renv; report built with Quarto.
+
+## How to cite
+
+This repository is archived in Zenodo: [10.5281/zenodo.24607816](https://doi.org/10.5281/zenodo.24607816).
+
+Moreno, M. S. (2026). *Influence of urban heat islands on urban soil carbon in Santiago* (Version v1.0.0) [Software and simulated data]. Zenodo. https://doi.org/10.5281/zenodo.24607816
+
+## License
+
+The code is released under the [MIT License](LICENSE). The simulated data in `datos/` and the figures are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): they can be reused with credit to Mariana dos Santos Moreno (@runaweay).
