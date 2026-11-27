@@ -9,7 +9,7 @@
 #También se introducen NA a propósito (MCAR, MAR y MNAR) para la actividad.
 
 #Generado con ayuda de Claude (Anthropic). El pedido y los elementos
-#del proyecto utilizados están descritos en la metodología del informe (index.qmd).
+#del proyecto utilizados están descritos en el README y en la metodología del informe (index.qmd).
 
 library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
 library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos
@@ -24,7 +24,7 @@ acotar <- function(x, min, max) pmin(pmax(x, min), max)
 
 #Nota: en todo el script, case_when() y if_else() definen el efecto de cada
 # tratamiento: "si el sitio es X, suma este valor; si no, suma este otro".
-# Los valores elegidos están resumidos en datos/README.md (parámetros de la simulación).
+# Los valores elegidos están resumidos en el README (Simulation parameters).
 
 #1. Diseño estratificado: 3 coberturas x 2 manejos x 5 quintiles x 4 = 120
 base <- expand_grid(

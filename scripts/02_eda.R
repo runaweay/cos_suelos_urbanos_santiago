@@ -32,7 +32,7 @@ suelo <- fisica |>
   left_join(terreno, by = "sitio_id") |>
   mutate(
     quintil_icu   = factor(quintil_icu, levels = paste0("Q", 1:5)),
-    #grupo de textura (ver datos/README.md): arena >= 55 % = gruesa;
+    #grupo de textura (ver el diccionario en el README): arena >= 55 % = gruesa;
     # si no, arcilla >= 30 % = fina; el resto = media
     textura_grupo = case_when(arena_pct >= 55   ~ "gruesa",
                               arcilla_pct >= 30 ~ "fina",
