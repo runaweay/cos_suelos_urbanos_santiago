@@ -259,46 +259,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#funciones.R -----------------------------------------------------------------</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Funciones propias del proyecto. Se usan en index.qmd y en</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#scripts/04_validacion_diccionario.qmd (un solo lugar para no duplicar código).</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># scripts/04_validacion_diccionario.qmd (un solo lugar para no duplicar código).</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#validar_suelos() --------------------------------------------------------------</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Revisa 3 variables según el diccionario de datos (datos/README.md):</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - tipo_cobertura: solo parque_cesped, borde_carretera o bosque_urbano, sin NA</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   (es parte del diseño del muestreo, todos los sitios deben tenerla)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># - cos_pct: entre 0 y 15 %, NA permitido (~3 % de muestras perdidas, MCAR)</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># - cone_index_mpa: entre 0 y 5 MPa, NA permitido (límite del penetrómetro, MNAR)</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Entrada: una tabla con esas 3 columnas.</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#Salida: imprime OK o FALLA para cada revisión y devuelve (de forma invisible)</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># TRUE si todo está bien y FALSE si algo falla.</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>validar_suelos <span class="ot">&lt;-</span> <span class="cf">function</span>(datos) {</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">#estructural: %in% da FALSE para un NA o una categoría que no está en el diseño</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  cobertura_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>tipo_cobertura <span class="sc">%in%</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">c</span>(<span class="st">"parque_cesped"</span>, <span class="st">"borde_carretera"</span>, <span class="st">"bosque_urbano"</span>))</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: COS entre 0 y 15 % (na.rm = TRUE ignora los NA, que están permitidos)</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  cos_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cos_pct <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cos_pct <span class="sc">&lt;=</span> <span class="dv">15</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  cone_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cone_index_mpa <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cone_index_mpa <span class="sc">&lt;=</span> <span class="dv">5</span>,</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="co">#ifelse(): si la revisión dio TRUE escribe "OK"; si dio FALSE (o NA), "FALLA".</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="co">#isTRUE() evita un error cuando la columna no existe y la revisión queda vacía.</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  marca <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(<span class="fu">isTRUE</span>(x), <span class="st">"OK"</span>, <span class="st">"FALLA"</span>)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Cobertura válida (estructural):  "</span>, <span class="fu">marca</span>(cobertura_ok), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"COS 0-15% (contenido):          "</span>, <span class="fu">marca</span>(cos_ok),       <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Penetrómetro 0-5 MPa (contenido):"</span>, <span class="fu">marca</span>(cone_ok),      <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">isTRUE</span>(cobertura_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cos_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cone_ok))</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Revisa los datos según el diccionario de datos (README):</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - sitio_id + profundidad_cm: cada combinación aparece una sola vez</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#   (un ID repetido duplicaría filas al unir tablas con left_join)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># - tipo_cobertura: solo parque_cesped, borde_carretera o bosque_urbano, sin NA</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   (es parte del diseño del muestreo, todos los sitios deben tenerla)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># - cos_pct: entre 0 y 15 %, NA permitido (~3 % de muestras perdidas, MCAR)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># - cone_index_mpa: entre 0 y 5 MPa, NA permitido (límite del penetrómetro, MNAR)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Entrada: una tabla con una fila por sitio x profundidad y esas columnas.</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Salida: imprime OK o FALLA para cada revisión y devuelve (de forma invisible)</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># TRUE si todo está bien y FALSE si algo falla.</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>validar_suelos <span class="ot">&lt;-</span> <span class="cf">function</span>(datos) {</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="co">#estructural: duplicated() marca las filas cuyo sitio_id + profundidad ya apareció antes</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  id_ok <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">any</span>(<span class="fu">duplicated</span>(datos[, <span class="fu">c</span>(<span class="st">"sitio_id"</span>, <span class="st">"profundidad_cm"</span>)]))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#estructural: %in% da FALSE para un NA o una categoría que no está en el diseño</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  cobertura_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>tipo_cobertura <span class="sc">%in%</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">c</span>(<span class="st">"parque_cesped"</span>, <span class="st">"borde_carretera"</span>, <span class="st">"bosque_urbano"</span>))</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: COS entre 0 y 15 % (na.rm = TRUE ignora los NA, que están permitidos)</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  cos_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cos_pct <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cos_pct <span class="sc">&lt;=</span> <span class="dv">15</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="co">#contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  cone_ok <span class="ot">&lt;-</span> <span class="fu">all</span>(datos<span class="sc">$</span>cone_index_mpa <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> datos<span class="sc">$</span>cone_index_mpa <span class="sc">&lt;=</span> <span class="dv">5</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="co">#ifelse(): si la revisión dio TRUE escribe "OK"; si dio FALSE (o NA), "FALLA".</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="co">#isTRUE() evita un error cuando la columna no existe y la revisión queda vacía.</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  marca <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(<span class="fu">isTRUE</span>(x), <span class="st">"OK"</span>, <span class="st">"FALLA"</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"ID único por sitio y profundidad (estructural):"</span>, <span class="fu">marca</span>(id_ok),        <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Cobertura válida (estructural):                "</span>, <span class="fu">marca</span>(cobertura_ok), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"COS 0-15 % (contenido):                        "</span>, <span class="fu">marca</span>(cos_ok),       <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Penetrómetro 0-5 MPa (contenido):              "</span>, <span class="fu">marca</span>(cone_ok),      <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">isTRUE</span>(id_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cobertura_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cos_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cone_ok))</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Cobertura válida (estructural):   OK 
-COS 0-15% (contenido):           OK 
-Penetrómetro 0-5 MPa (contenido): OK </code></pre>
+<pre><code>ID único por sitio y profundidad (estructural): OK 
+Cobertura válida (estructural):                 OK 
+COS 0-15 % (contenido):                         OK 
+Penetrómetro 0-5 MPa (contenido):               OK </code></pre>
 </div>
 </div>
 </section>
@@ -310,15 +317,17 @@ Penetrómetro 0-5 MPa (contenido): OK </code></pre>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>tipo_cobertura[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"plaza"</span>   <span class="co">#categoría que no está en el diseño</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cos_pct[<span class="dv">5</span>]        <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.8</span>      <span class="co">#COS negativo</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>suelo_mal<span class="sc">$</span>cone_index_mpa[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="fl">6.2</span>       <span class="co">#sobre el límite del penetrómetro</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo_mal)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>suelo_mal <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(suelo_mal, suelo_mal[<span class="dv">1</span>, ])   <span class="co">#fila repetida (ID duplicado)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo_mal)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Cobertura válida (estructural):   FALLA 
-COS 0-15% (contenido):           FALLA 
-Penetrómetro 0-5 MPa (contenido): FALLA </code></pre>
+<pre><code>ID único por sitio y profundidad (estructural): FALLA 
+Cobertura válida (estructural):                 FALLA 
+COS 0-15 % (contenido):                         FALLA 
+Penetrómetro 0-5 MPa (contenido):               FALLA </code></pre>
 </div>
 </div>
-<p>Con los datos simulados las tres validaciones dan OK. Con la copia modificada, las tres dan FALLA. Cuando lleguen los datos de terreno y laboratorio, esta función se puede correr antes de cada análisis.</p>
+<p>Con los datos simulados las cuatro revisiones dan OK. Con la copia modificada, las cuatro dan FALLA. Cuando lleguen los datos de terreno y laboratorio, esta función se puede correr antes de cada análisis.</p>
 
 
 </section>
