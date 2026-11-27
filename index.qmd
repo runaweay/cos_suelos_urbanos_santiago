@@ -65,7 +65,7 @@ suelo <- suelo |>
                        labels = c("Borde de carretera", "Parque de césped", "Bosque urbano")),
     manejo = factor(manejo, levels = c("bueno", "deficiente"),
                     labels = c("Bueno", "Deficiente")),
-    #textura_grupo viene de 02_eda.R (regla en datos/README.md); solo cambia la etiqueta
+    #textura_grupo viene de 02_eda.R (regla en el diccionario del README); solo cambia la etiqueta
     textura = factor(textura_grupo, levels = c("gruesa", "media", "fina"),
                      labels = c("Gruesa", "Media", "Fina"))
   )
@@ -112,9 +112,9 @@ caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
 - la respiración se duplica con cada 10 °C (Q~10~ = 2) y es menor con 30% CRA;
 - datos faltantes a propósito: muestras perdidas (MCAR), densidad aparente sin medir con muchos fragmentos rocosos (MAR) y valores fuera del rango del penetrómetro o de la placa MicroResp (MNAR).
 
-Los valores exactos de cada parámetro están en el [diccionario de datos](https://github.com/runaweay/cos_suelos_urbanos_santiago/tree/main/datos).
+Los valores exactos de cada parámetro están en el [diccionario de datos](https://github.com/runaweay/cos_suelos_urbanos_santiago#data-dictionary).
 
-**Control de calidad.** Antes del análisis, la función `validar_suelos()` (`scripts/funciones.R`) revisa que el tipo de cobertura sea una de las tres del diseño y que el COS (0-15%) y la compactación (0-5 MPa) estén en los rangos esperados:
+**Control de calidad.** Antes del análisis, la función `validar_suelos()` (`scripts/funciones.R`) revisa que cada sitio y profundidad aparezca una sola vez, que el tipo de cobertura sea una de las tres del diseño y que el COS (0-15%) y la compactación (0-5 MPa) estén en los rangos esperados:
 
 ```{r}
 #| label: validar-datos

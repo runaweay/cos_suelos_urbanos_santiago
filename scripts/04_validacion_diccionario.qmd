@@ -62,8 +62,9 @@ suelo_mal <- suelo
 suelo_mal$tipo_cobertura[3] <- "plaza"   #categoría que no está en el diseño
 suelo_mal$cos_pct[5]        <- -0.8      #COS negativo
 suelo_mal$cone_index_mpa[7] <- 6.2       #sobre el límite del penetrómetro
+suelo_mal <- bind_rows(suelo_mal, suelo_mal[1, ])   #fila repetida (ID duplicado)
 
 validar_suelos(suelo_mal)
 ```
 
-Con los datos simulados las tres validaciones dan OK. Con la copia modificada, las tres dan FALLA. Cuando lleguen los datos de terreno y laboratorio, esta función se puede correr antes de cada análisis.
+Con los datos simulados las cuatro revisiones dan OK. Con la copia modificada, las cuatro dan FALLA. Cuando lleguen los datos de terreno y laboratorio, esta función se puede correr antes de cada análisis.
