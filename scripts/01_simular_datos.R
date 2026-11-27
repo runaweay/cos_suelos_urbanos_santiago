@@ -11,11 +11,6 @@
 #Generado con ayuda de Claude (Anthropic). El pedido y los elementos
 #del proyecto utilizados están descritos en el README.
 
-install.packages("dplyr")
-install.packages("tidyr")
-install.packages("dplyr")
-
-
 library(dplyr) #sirve para limpiar, filtrar, ordenar, resumir y transformar tablas de datos (data frames) de una manera rápida, intuitiva y con una sintaxis muy legible
 library(tidyr) #paquete que forma parte del ecosistema tidyverse, diseñado para limpiar, reorganizar y estructurar conjuntos de datos
 library(readr) #leer archivos excel

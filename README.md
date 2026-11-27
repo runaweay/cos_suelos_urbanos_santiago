@@ -1,9 +1,10 @@
 # Influence of urban heat islands on urban soil carbon in Santiago
 
-Final project for the course *Visualización de datos medioambientales con R* (AGP3141-1, PUC Chile), taught by Prof. Sara Acevedo. It explores whether green areas in the warmest parts of Santiago store less organic carbon in their soils, based on my PhD project. **The data are simulated**: they include the patterns expected from the thesis hypothesis, because field sampling has not been carried out yet.
+Final project for the course *Visualización de datos medioambientales con R* (AGP3141-1, PUC Chile), taught by Prof. Sara Acevedo. It explores whether green areas in the warmest parts of Santiago store less organic carbon in their soils, based on my PhD project.
+**The data are simulated** and include the patterns expected from the thesis hypothesis, because field sampling has not been carried out yet.
 
-> **To see the results, go to the report: <https://runaweay.github.io/cos_suelos_urbanos_santiago/>**
-> The report (in Spanish) contains the context, the methods (including the criteria and the prompt used to simulate the data), the figures, the conclusions and the references.
+> To see the results, go to the report (<https://runaweay.github.io/cos_suelos_urbanos_santiago/>).
+> This report (in Spanish) contains the context, the methods (including the criteria and the prompt used to simulate the data), the figures, the conclusions and the references.
 
 ## Contents
 
@@ -38,7 +39,7 @@ cos_suelos_urbanos_santiago/
 
 ## Data
 
-Five raw tables (sites, field measurements, soil physics, carbon and respiration) and one processed table, all joined by `sitio_id`. Variables, units, expected ranges, simulation parameters and missing data are described in the [data dictionary](datos/README.md).
+The data are composed by five raw tables (sites, field measurements, soil physics, carbon and respiration) and one processed table, all joined by `sitio_id`. Variables, units, expected ranges, simulation parameters and missing data are described in the [data dictionary](datos/README.md).
 
 **Validation:** before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks that the data follow the dictionary (design categories and ranges of soil organic carbon and compaction). It is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
 
