@@ -70,7 +70,7 @@ cos_suelos_urbanos_santiago/
 
 All tables are joined by `sitio_id`. Dates follow ISO 8601 (YYYY-MM-DD). Missing values = `NA`.
 
-### ✏️ Tables
+### Tables
 
 | File | One row = | Variables |
 |------------------------|------------------------|------------------------|
@@ -81,7 +81,7 @@ All tables are joined by `sitio_id`. Dates follow ISO 8601 (YYYY-MM-DD). Missing
 | `crudos/suelo_respiracion.csv` | site × temperature × moisture × replicate (0-10 cm) | `temp_incubacion_c` (20, 30, 40), `humedad_cra_pct` (30, 70), `replica` (1–3), `rm_ug_co2c_g_h` |
 | `procesados/suelo_analisis.csv` | site × depth | all variables from the raw tables (except respiration) + `textura_grupo`, `stock_cos_kg_m2`, `frac_coam` |
 
-### 🔢 Expected values per variable
+### Expected values per variable
 
 Physically plausible ranges for mineral soils of green areas in Santiago. They are used to validate both the simulated data and the future field and laboratory data.
 
@@ -111,7 +111,7 @@ Physically plausible ranges for mineral soils of green areas in Santiago. They a
 | `replica` | integer | \- | 1 - 3 | no |
 | `rm_ug_co2c_g_h` | numeric | µg CO₂-C/g/h | ≥ 0 | yes (MCAR and MNAR) |
 
-### 🖇️ Derived variables (calculated in the scripts)
+### Derived variables (calculated in the scripts)
 
 | Variable | Where | Rule |
 |------------------------|------------------------|------------------------|
@@ -120,7 +120,7 @@ Physically plausible ranges for mineral soils of green areas in Santiago. They a
 | `frac_coam` | `02_eda.R` | `coam_pct` / (`cop_pct` + `coam_pct`) |
 | `q10` | `03_group_by_nest.qmd` | exp(10 × slope) of the model log(respiration) ~ temperature, per site |
 
-### ℹ️ Simulation parameters
+### Simulation parameters
 
 Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 
@@ -144,7 +144,7 @@ Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 | `estabilidad_agregados_pct` | 35% + 9 per SOC point, more with clay, less with compaction; limits 10-95% |
 | `rm_ug_co2c_g_h` | basal = 0.35 × SOC^0.9, increasing with quintile; Q10 = 2 (×1, ×2 and ×4 at 20, 30 and 40 °C); at 30% WHC ×0.55 (×0.40 at 40 °C) |
 
-### 💭 Missing data introduced on purpose
+### Missing data introduced on purpose
 
 | Variable | Mechanism | Simulated cause |
 |------------------------|------------------------|------------------------|
