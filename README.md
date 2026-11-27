@@ -120,7 +120,7 @@ Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 | Variable | How it was simulated |
 |------------------------|------------------------|
 | Design | 120 sites = 3 covers × 2 management levels × 5 quintiles × 4 replicates; `set.seed(2026)` |
-| `fecha_muestreo` | random between 2026-11-02 and 2027-02-27 |
+| `fecha_muestreo` | random between 2026-11-02 and 2027-02-27 (spring, summer) |
 | `latitud`, `longitud` | random between -33.60 and -33.35 and between -70.78 and -70.50 (no spatial pattern) |
 | `lst_verano_c` | 28.9 °C in Q1 + 1.1 °C per quintile (Q5 ≈ 33.3 °C), SD 0.4 |
 | `ndvi` | forest 0.62, lawn 0.52, roadside 0.32; +0.08 good management, -0.04 poor; -0.025 per quintile; limits 0.05-0.90 |
