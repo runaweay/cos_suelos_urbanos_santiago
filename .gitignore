@@ -8,5 +8,9 @@
 .DS_Store
 
 # Quarto
-*_files/
+/*_files/
+/scripts/*_files/
 .quarto/
+
+/.quarto/
+**/*.quarto_ipynb

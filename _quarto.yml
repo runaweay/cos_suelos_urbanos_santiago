@@ -1,0 +1,36 @@
+#Configuración del sitio web del proyecto (Quarto)
+#Al renderizar el proyecto, todo el HTML queda en docs/, que GitHub Pages publica en
+#https://runaweay.github.io/cos_suelos_urbanos_santiago/
+project:
+  type: website
+  output-dir: docs
+  render:                       #solo estos archivos se renderizan (en este orden)
+    - index.qmd
+    - scripts/03_group_by_nest.qmd
+    - scripts/04_validacion_diccionario.qmd
+
+website:
+  title: "Carbono en suelos urbanos de Santiago"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Proyecto final"
+      - text: "Actividades"
+        menu:
+          - href: scripts/03_group_by_nest.qmd
+            text: "Actividad 9: un modelo por sitio"
+          - href: scripts/04_validacion_diccionario.qmd
+            text: "Actividad 10: validación de datos"
+    right:
+      - icon: github
+        href: https://github.com/runaweay/cos_suelos_urbanos_santiago
+
+format:
+  html:
+    lang: es
+    toc: true
+    lightbox: true
+
+execute:
+  warning: false
+  message: false
