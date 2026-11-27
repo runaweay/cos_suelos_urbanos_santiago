@@ -1,108 +1,61 @@
-# Influencia de las islas de calor en el carbono de los suelos urbanos de Santiago
+# Influence of urban heat islands on urban soil carbon in Santiago
 
-> Proyecto final del curso *Visualización de datos medioambientales con R (AGP3141-1)*, basado en la propuesta de tesis doctoral "Influencia del microclima térmico y las propiedades físicas en la dinámica del carbono en suelos urbanos de Santiago de Chile".
->
-> Todos los datos de este repositorio son simulados y fueron generados con el script `scripts/01_simular_datos.R`, con efectos definidos a partir de la hipótesis de la tesis, solo con fines de práctica para el curso. El muestreo real se hará en primavera-verano 2026-2027.
+Final project for the course *Visualización de datos medioambientales con R* (AGP3141-1, PUC Chile), taught by Prof. Sara Acevedo. It explores whether green areas in the warmest parts of Santiago store less organic carbon in their soils, based on my PhD project. **The data are simulated**: they include the patterns expected from the thesis hypothesis, because field sampling has not been carried out yet.
 
-## Cómo se generaron los datos
+> **To see the results, go to the report: <https://runaweay.github.io/cos_suelos_urbanos_santiago/>**
+> The report (in Spanish) contains the context, the methods (including the criteria and the prompt used to simulate the data), the figures, the conclusions and the references.
 
-Los datos fueron generados con ayuda de Claude (Anthropic), en septiembre de 2026, a partir del siguiente pedido (traducido): "puedes ayudarme a crear los datos que necesito, basados en mi proyecto de doctorado? Como aún no hemos ido a terreno, no tengo ningún dato."
+## Contents
 
-Para generar los datos se usaron los siguientes elementos del proyecto de tesis:
+- [Repository structure](#repository-structure)
+- [Data](#data)
+- [Reproducibility](#reproducibility)
+- [Use of artificial intelligence](#use-of-artificial-intelligence)
+- [Credits](#credits)
 
-- **Diseño de muestreo**: 120 áreas verdes de Santiago, estratificadas por tipo de cobertura (parque de césped, borde de carretera y bosque urbano), calidad de manejo (bueno y deficiente) y quintil de temperatura superficial de verano (Q1 a Q5).
-- **Variables y métodos previstos**: NDVI y NDMI; compactación con penetrómetro; humedad, temperatura y conductividad eléctrica con sensor TEROS-12; textura, densidad aparente, fragmentos rocosos y estabilidad de agregados; carbono orgánico del suelo y sus fracciones (COP y COAM) a 0-10 y 10-20 cm; y respiración microbiana con MicroResp a 20, 30 y 40 °C y 30 y 70% de la capacidad de retención de agua.
-- **Hipótesis**: los suelos con mayor intensidad de la isla de calor, textura gruesa, menor NDVI/NDMI y manejo deficiente tendrían menos carbono orgánico y más respiración microbiana.
+## Repository structure
 
-A partir de eso, Claude escribió el script `scripts/01_simular_datos.R`, que genera los datos con efectos definidos según la hipótesis e introduce datos ausentes a propósito (MCAR, MAR y MNAR), para la actividad sobre datos faltantes del curso. Los valores de los efectos y de la variabilidad fueron elegidos para ser plausibles y no provienen de mediciones. Después, los efectos se ajustaron para que las diferencias entre tratamientos fueran más claras.
-
-## Preguntas exploratorias
-
-1.  ¿El COS es menor en las áreas verdes ubicadas en las zonas más cálidas de la ciudad?
-2.  ¿La calidad del manejo y el tipo de cobertura modifican esa relación?
-3.  ¿La textura del suelo cambia la respuesta del COS al calor?
-4.  ¿La respiración microbiana aumenta con la temperatura y depende de la humedad?
-
-## Cómo reproducir
-
-1.  Abrir `doctorado_cos_suelos_urbanos_santiago.Rproj` en RStudio.
-2.  Instalar los paquetes con las mismas versiones usadas: `renv::restore()`.
-3.  Ejecutar `scripts/01_simular_datos.R` desde la raíz del repositorio (genera los CSV en `datos/`, semilla fija `set.seed(2026)`).
-4.  Ejecutar `scripts/02_eda.R` desde la raíz (genera las figuras exploratorias en `figuras/`).
-5.  Renderizar los informes de `scripts/` con Quarto (leen los datos desde `../datos/`):
-    - `03_informe_borrador.qmd`: borrador del proyecto final.
-    - `04_group_by_nest.qmd`: Actividad 9, Q^10^ de la respiración por sitio con `nest()` + `map()` + `broom`.
-    - `05_validacion_diccionario.qmd`: Actividad 10, mini diccionario y función de validación de 3 variables.
-
-## Estructura
-
-```         
+```
 cos_suelos_urbanos_santiago/
-├── datos/      #tablas en formato ordenado (tidy), una por tipo de dato
+├── index.qmd           #final report (home page of the website)
+├── _quarto.yml         #website configuration
+├── datos/
+│   ├── crudos/         #raw tables, as produced by the simulation
+│   ├── procesados/     #joined tables, ready for analysis
+│   └── README.md       #data dictionary (in Spanish)
 ├── scripts/
-│   ├── 01_simular_datos.R       #genera los datos simulados
-│   ├── 02_eda.R                 #análisis exploratorio y datos ausentes
-│   ├── 03_informe_borrador.qmd  #borrador del proyecto final (storytelling)
-│   ├── 03_informe_borrador.html #informe renderizado
-│   ├── 04_group_by_nest.qmd     #actividad 9: un modelo por sitio (Q10)
-│   ├── 04_group_by_nest.html    #actividad renderizada
-│   ├── 05_validacion_diccionario.qmd   #actividad 10: diccionario y validación
-│   └── 05_validacion_diccionario.html  #actividad renderizada
-├── figuras/    #salidas exploratorias del EDA, numeradas 01_, 02_, ...
-├── renv/ y renv.lock            #entorno reproducible de paquetes (renv)
-├── doctorado_cos_suelos_urbanos_santiago.Rproj   #proyecto de RStudio
-├── .gitignore
-└── README.md
+│   ├── 01_simular_datos.R            #generates the raw data
+│   ├── 02_eda.R                      #exploration, missing data and processed table
+│   ├── 03_group_by_nest.qmd          #activity 9: one model per site (Q10)
+│   ├── 04_validacion_diccionario.qmd #activity 10: data dictionary and validation
+│   ├── funciones.R                   #validar_suelos() function
+│   └── referencias.bib               #report bibliography
+├── figuras/            #exploratory figures from 02_eda.R
+├── imagenes/           #photos used in the report
+├── docs/               #rendered website (GitHub Pages)
+└── renv/, renv.lock    #package versions
 ```
 
-## Diccionario de datos
+## Data
 
-Todas las tablas se unen por `sitio_id`. Fechas en ISO 8601 (AAAA-MM-DD). Datos ausentes = `NA`.
+Five raw tables (sites, field measurements, soil physics, carbon and respiration) and one processed table, all joined by `sitio_id`. Variables, units, expected ranges, simulation parameters and missing data are described in the [data dictionary](datos/README.md).
 
-| Archivo | Una fila = | Variables |
-|------------------------|------------------------|------------------------|
-| `sitios.csv` | sitio (n = 120) | `fecha_muestreo`, `latitud`, `longitud`, `tipo_cobertura` (parque_cesped, borde_carretera, bosque_urbano), `manejo` (bueno, deficiente), `quintil_icu` (Q1–Q5), `lst_verano_c` (°C), `ndvi`, `ndmi` |
-| `suelo_terreno.csv` | sitio | `cone_index_mpa` (penetrómetro), `humedad_vol_m3_m3`, `temp_suelo_c`, `ce_ds_m` (TEROS-12) |
-| `suelo_fisica.csv` | sitio × profundidad | `profundidad_cm` (0-10, 10-20), `arena_pct`, `limo_pct`, `arcilla_pct`, `fragmentos_rocosos_pct`, `da_g_cm3`, `estabilidad_agregados_pct` |
-| `suelo_carbono.csv` | sitio × profundidad | `cos_pct`, `cop_pct`, `coam_pct` |
-| `suelo_respiracion.csv` | sitio × temperatura × humedad × réplica (0-10 cm) | `temp_incubacion_c` (20, 30, 40), `humedad_cra_pct` (30, 70), `replica` (1–3), `rm_ug_co2c_g_h` |
+**Validation:** before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks that the data follow the dictionary (design categories and ranges of soil organic carbon and compaction). It is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
 
-### Valores esperados por variable
+## Reproducibility
 
-Rangos físicamente plausibles para suelos minerales de áreas verdes de Santiago. Sirven para validar tanto los datos simulados como los de terreno y laboratorio. La validación de `tipo_cobertura`, `cos_pct` y `cone_index_mpa` está implementada en `scripts/05_validacion_diccionario.qmd`.
+1. Open `doctorado_cos_suelos_urbanos_santiago.Rproj` in RStudio.
+2. Install the packages with the same versions: `renv::restore()`.
+3. Run `scripts/01_simular_datos.R` and then `scripts/02_eda.R` (fixed seed, `set.seed(2026)`, so the data are always the same).
+4. In the Terminal: `quarto render` (builds the website in `docs/`).
 
-| Variable | Tipo | Unidad | Valores esperados | NA |
-|---------------|---------------|---------------|---------------|---------------|
-| `sitio_id` | identificador | \- | S001–S120, único por sitio | no |
-| `fecha_muestreo` | fecha | AAAA-MM-DD | primavera-verano 2026-2027 | no |
-| `latitud`, `longitud` | numérica | grados decimales | dentro del área urbana de Santiago (≈ -33.7 a -33.3; -70.9 a -70.4) | no |
-| `tipo_cobertura` | categórica | \- | parque_cesped, borde_carretera, bosque_urbano | no |
-| `manejo` | categórica | \- | bueno, deficiente | no |
-| `quintil_icu` | categórica ordinal | \- | Q1-Q5 | no |
-| `lst_verano_c` | numérica | °C | 20 - 45 | no |
-| `ndvi`, `ndmi` | numérica | \- | -1 - 1 | no |
-| `cone_index_mpa` | numérica | MPa | 0 - 5 (límite del penetrómetro) | sí (MNAR) |
-| `humedad_vol_m3_m3` | numérica | m³/m³ | 0 - 0.6 | no |
-| `temp_suelo_c` | numérica | °C | -5 - 60 | no |
-| `ce_ds_m` | numérica | dS/m | ≥ 0 | no |
-| `profundidad_cm` | categórica | cm | 0-10, 10-20 | no |
-| `arena_pct`, `limo_pct`, `arcilla_pct` | numérica | \% | 0 - 100; la suma de las tres = 100 | no |
-| `fragmentos_rocosos_pct` | numérica | \% | 0 - 100 | no |
-| `da_g_cm3` | numérica | g/cm³ | 0.8 - 2.0 | sí (MAR) |
-| `estabilidad_agregados_pct` | numérica | \% | 0 - 100 | no |
-| `cos_pct` | numérica | \% | 0 - 15 | sí (MCAR) |
-| `cop_pct`, `coam_pct` | numérica | \% | ≥ 0 y `cop_pct` + `coam_pct` ≈ `cos_pct` | sí (MCAR) |
-| `temp_incubacion_c` | numérica | °C | 20, 30, 40 | no |
-| `humedad_cra_pct` | numérica | \% CRA | 30, 70 | no |
-| `replica` | entera | \- | 1 - 3 | no |
-| `rm_ug_co2c_g_h` | numérica | µg CO₂-C/g/h | ≥ 0 | sí (MCAR y MNAR) |
+## Use of artificial intelligence
 
-## Datos ausentes incluidos a propósito
+I used Claude (Anthropic) to write the data simulation script, based on the design, variables and hypothesis of my thesis, and as support to review the code, organize the repository and draft texts. I reviewed and adjusted all the content, and the analysis decisions are my own.
 
-| Variable | Mecanismo | Causa simulada |
-|------------------------|------------------------|------------------------|
-| `cos_pct`, `cop_pct`, `coam_pct` | MCAR | \~3% de muestras extraviadas (etiqueta o bolsa perdida) |
-| `rm_ug_co2c_g_h` | MCAR | \~2% de pocillos contaminados o con burbujas |
-| `da_g_cm3` | MAR | con \> 20% de fragmentos rocosos el cilindro no entra |
-| `cone_index_mpa` | MNAR | el penetrómetro no mide sobre 5 MPa |
-| `rm_ug_co2c_g_h` | MNAR | la placa MicroResp se satura con respiración muy alta |
+## Credits
+
+- Prof. Sara Acevedo, for the course, its materials and examples.
+- Elena Lazo, whose repository [pm25_rm](https://github.com/elenalazo20/pm25_rm) served as a model for the structure.
+- Okabe-Ito colour palette, colourblind-friendly.
+- R packages: tidyverse, naniar, plotly, broom and renv; report built with Quarto.
