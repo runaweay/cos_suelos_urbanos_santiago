@@ -100,9 +100,7 @@ caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
 
 **Variables.** En cada sitio: NDVI y NDMI; compactación (penetrómetro); humedad, temperatura y conductividad eléctrica del suelo (sensor TEROS-12). A 0-10 y 10-20 cm: textura, densidad aparente, fragmentos rocosos, estabilidad de agregados y COS con sus fracciones particulada (COP) y asociada a minerales (COAM). A 0-10 cm: respiración microbiana con MicroResp a 20, 30 y 40 °C y a 30 y 70% CRA.
 
-<!-- Foto: guardar el archivo en imagenes/ y borrar las marcas de comentario.
-![Área verde de Santiago. Foto: Mariana dos Santos Moreno.](imagenes/area_verde.jpg){fig-alt="Describir la foto" width=80%}
--->
+![Muestreo de suelo en un área verde de Santiago, realizado en un estudio anterior. Foto: @runaweay.](imagenes/muestreo_area_verde.jpg){fig-alt="Cuchillo de suelo con escala en centímetros clavado en un hoyo abierto en un césped, con raíces y suelo oscuro." width=60%}
 
 **Datos simulados.** Como el muestreo se hará en primavera-verano 2026-2027, los datos fueron simulados en R con ayuda de Claude (Anthropic) a partir del pedido "puedes ayudarme a crear los datos que necesito, basados en mi proyecto de doctorado? Como aún no hemos ido a terreno, no tengo ningún dato" (traducido del portugués). Se usaron el diseño, las variables y la hipótesis de la tesis, y se incorporaron estos patrones:
 
@@ -308,6 +306,8 @@ Estos resultados muestran los patrones incorporados en la simulación, no hallaz
 - Ajustar modelos (regresión múltiple o GLM) con temperatura, manejo, cobertura, textura y la interacción temperatura × textura.
 - Agregar un mapa de los sitios cuando estén las coordenadas reales.
 - Reemplazar los datos simulados por los de terreno y laboratorio, con la misma estructura de tablas.
+
+El código, los datos y el diccionario de datos están en el repositorio [github.com/runaweay/cos_suelos_urbanos_santiago](https://github.com/runaweay/cos_suelos_urbanos_santiago).
 
 ## Referencias
 

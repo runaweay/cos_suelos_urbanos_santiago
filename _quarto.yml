@@ -10,11 +10,8 @@ project:
     - scripts/04_validacion_diccionario.qmd
 
 website:
-  title: "Carbono en suelos urbanos de Santiago"
-  navbar:
-    right:
-      - icon: github
-        href: https://github.com/runaweay/cos_suelos_urbanos_santiago
+  title: "Carbono en suelos urbanos de Santiago"   #título de la pestaña del navegador
+  search: false                                    #sin barra de navegación ni buscador
 
 format:
   html:
