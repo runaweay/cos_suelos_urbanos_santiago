@@ -5,7 +5,6 @@ author: "Mariana dos Santos Moreno"
 lang: es
 format:
   html:
-    embed-resources: true
     code-fold: false
 execute:
   warning: false
@@ -20,8 +19,8 @@ En mi tesis, medimos la respiración microbiana (RM) de cada sitio a 20, 30 y 40
 library(tidyverse)
 library(broom)
 
-sitios <- read_csv("../datos/sitios.csv")
-resp   <- read_csv("../datos/suelo_respiracion.csv")
+sitios <- read_csv("../datos/crudos/sitios.csv")
+resp   <- read_csv("../datos/crudos/suelo_respiracion.csv")
 ```
 
 ## 1. Los datos
@@ -77,7 +76,7 @@ models <- by_sitio_lm |>
 models |> select(sitio_id, tipo_cobertura, rsq, q10, n)
 ```
 
-## 5. Existe un patrón en los R^~2~^?
+## 5. Existe un patrón en los R^2^?
 
 ```{r}
 #| fig-height: 6

@@ -5,7 +5,6 @@ author: "Mariana dos Santos Moreno"
 lang: es
 format:
   html:
-    embed-resources: true
     code-fold: false
 execute:
   warning: false
@@ -17,9 +16,9 @@ execute:
 ```{r}
 library(tidyverse)
 
-sitios  <- read_csv("../datos/sitios.csv")
-terreno <- read_csv("../datos/suelo_terreno.csv")
-carbono <- read_csv("../datos/suelo_carbono.csv")
+sitios  <- read_csv("../datos/crudos/sitios.csv")
+terreno <- read_csv("../datos/crudos/suelo_terreno.csv")
+carbono <- read_csv("../datos/crudos/suelo_carbono.csv")
 
 #tabla de análisis (una fila = sitio x profundidad)
 suelo <- carbono |>
@@ -44,26 +43,13 @@ El tipo de cobertura es parte del diseño del muestreo (3 coberturas × 2 manejo
 
 ## 2. Función de validación
 
+La función está en `scripts/funciones.R`, para usarla también en el informe final (`index.qmd`) sin copiar el código. El chunk de abajo la lee desde ese archivo y la muestra:
+
 ```{r}
-validar_suelos <- function(datos) {
-  #estructural: cobertura válida y sin NA
-  cobertura_ok <- all(datos$tipo_cobertura %in%
-                        c("parque_cesped", "borde_carretera", "bosque_urbano"))
+#| file: funciones.R
+```
 
-  #contenido: COS entre 0 y 15% (NA permitido)
-  cos_ok <- all(datos$cos_pct >= 0 & datos$cos_pct <= 15, na.rm = TRUE)
-
-  #contenido: resistencia a la penetración entre 0 y 5 MPa (NA permitido)
-  cone_ok <- all(datos$cone_index_mpa >= 0 & datos$cone_index_mpa <= 5,
-                 na.rm = TRUE)
-
-  marca <- function(x) ifelse(isTRUE(x), "OK", "FALLA")
-
-  cat("Cobertura válida (estructural): ", marca(cobertura_ok), "\n")
-  cat("COS 0-15 % (contenido):         ", marca(cos_ok),       "\n")
-  cat("Penetrómetro 0-5 MPa (contenido):", marca(cone_ok),     "\n")
-}
-
+```{r}
 validar_suelos(suelo)
 ```
 
