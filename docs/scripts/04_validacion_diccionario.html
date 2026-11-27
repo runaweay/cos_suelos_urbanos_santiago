@@ -129,27 +129,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
-<span class="menu-text">Proyecto final</span></a>
-  </li>  
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-actividades" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">Actividades</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-actividades">    
-        <li>
-    <a class="dropdown-item" href="../scripts/03_group_by_nest.html">
- <span class="dropdown-text">Actividad 9: un modelo por sitio</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../scripts/04_validacion_diccionario.html">
- <span class="dropdown-text">Actividad 10: validación de datos</span></a>
-  </li>  
-    </ul>
-  </li>
-</ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/runaweay/cos_suelos_urbanos_santiago"> <i class="bi bi-github" role="img">
@@ -280,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#funciones.R -----------------------------------------------------------------</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#Funciones propias del proyecto. Se usan en index.qmd y en</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># scripts/04_validacion_diccionario.qmd (un solo lugar para no duplicar código).</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#scripts/04_validacion_diccionario.qmd (un solo lugar para no duplicar código).</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#validar_suelos() --------------------------------------------------------------</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Revisa 3 variables según el diccionario de datos (datos/README.md):</span></span>
@@ -308,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  marca <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">ifelse</span>(<span class="fu">isTRUE</span>(x), <span class="st">"OK"</span>, <span class="st">"FALLA"</span>)</span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Cobertura válida (estructural):  "</span>, <span class="fu">marca</span>(cobertura_ok), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"COS 0-15 % (contenido):          "</span>, <span class="fu">marca</span>(cos_ok),       <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"COS 0-15% (contenido):          "</span>, <span class="fu">marca</span>(cos_ok),       <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Penetrómetro 0-5 MPa (contenido):"</span>, <span class="fu">marca</span>(cone_ok),      <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(<span class="fu">isTRUE</span>(cobertura_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cos_ok) <span class="sc">&amp;</span> <span class="fu">isTRUE</span>(cone_ok))</span>
@@ -318,7 +297,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Cobertura válida (estructural):   OK 
-COS 0-15 % (contenido):           OK 
+COS 0-15% (contenido):           OK 
 Penetrómetro 0-5 MPa (contenido): OK </code></pre>
 </div>
 </div>
@@ -335,7 +314,7 @@ Penetrómetro 0-5 MPa (contenido): OK </code></pre>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">validar_suelos</span>(suelo_mal)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Cobertura válida (estructural):   FALLA 
-COS 0-15 % (contenido):           FALLA 
+COS 0-15% (contenido):           FALLA 
 Penetrómetro 0-5 MPa (contenido): FALLA </code></pre>
 </div>
 </div>
