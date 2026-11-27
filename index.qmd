@@ -1,0 +1,315 @@
+---
+title: "Las islas de calor influyen en el carbono de los suelos urbanos de Santiago?"
+subtitle: "Proyecto final del curso Visualización de datos medioambientales con R (AGP3141-1), impartido por la Prof. Sara Acevedo"
+author: "Mariana dos Santos Moreno"
+date: last-modified
+date-format: long
+lang: es
+params:
+  cobertura: "todas"   #o "bosque_urbano", "parque_cesped", "borde_carretera"
+format:
+  html:
+    code-fold: true
+    code-summary: "Ver código"
+bibliography: scripts/referencias.bib
+---
+
+Los suelos de las áreas verdes urbanas pueden almacenar tanto o más carbono orgánico (COS) que muchos ecosistemas naturales [@edmondson2012]. Pero Santiago no se calienta de forma homogénea: las diferencias de temperatura entre sectores de la ciudad pueden alcanzar 9,2 °C [@henriquez2020]. Si el calor acelera la actividad de los microorganismos del suelo, las áreas verdes de las zonas más cálidas podrían estar perdiendo parte de ese carbono como CO~2~ [@vasenev2021]. Este informe explora esa idea con datos simulados a partir de mi proyecto de tesis doctoral, mientras se prepara el muestreo de terreno.
+
+::: {.callout-warning}
+## Datos simulados
+
+**Los datos de este proyecto son simulados** con `scripts/01_simular_datos.R`. El objetivo es preparar el flujo de análisis y visualización antes del muestreo de terreno (primavera-verano 2026-2027).
+:::
+
+::: {.callout-note}
+## Pregunta
+
+Las áreas verdes ubicadas en las zonas más cálidas de Santiago guardan menos carbono en sus suelos? Y cómo cambia esa respuesta según el manejo, la cobertura y la textura del suelo?
+:::
+
+::: {.column-margin}
+**Glosario**
+
+- **COS:** carbono orgánico del suelo.
+- **ICU:** isla de calor urbana.
+- **Q10:** cuántas veces aumenta la respiración con 10 °C más.
+- **CRA:** capacidad de retención de agua.
+- **IC 95%:** intervalo de confianza del 95%.
+:::
+
+```{r}
+#| label: preparar-datos
+#| echo: false
+library(tidyverse)
+library(plotly)
+
+#Tabla procesada (creada por scripts/02_eda.R): una fila = sitio x profundidad
+suelo <- read_csv("datos/procesados/suelo_analisis.csv")
+#Respiración: tabla cruda, porque se necesitan los NA de cada medición
+resp  <- read_csv("datos/crudos/suelo_respiracion.csv")
+
+#Parámetro: si cobertura no es "todas", el informe usa solo los sitios de esa cobertura
+if (params$cobertura != "todas") {
+  suelo <- suelo |> filter(tipo_cobertura == params$cobertura)
+  resp  <- resp  |> filter(sitio_id %in% suelo$sitio_id)
+}
+n_sitios <- n_distinct(suelo$sitio_id)
+
+#Etiquetas legibles para las figuras
+suelo <- suelo |>
+  mutate(
+    quintil_icu = factor(quintil_icu, levels = paste0("Q", 1:5)),
+    cobertura = factor(tipo_cobertura,
+                       levels = c("borde_carretera", "parque_cesped", "bosque_urbano"),
+                       labels = c("Borde de carretera", "Parque de césped", "Bosque urbano")),
+    manejo = factor(manejo, levels = c("bueno", "deficiente"),
+                    labels = c("Bueno", "Deficiente")),
+    #textura_grupo viene de 02_eda.R (regla en datos/README.md); solo cambia la etiqueta
+    textura = factor(textura_grupo, levels = c("gruesa", "media", "fina"),
+                     labels = c("Gruesa", "Media", "Fina"))
+  )
+
+sup  <- suelo |> filter(profundidad_cm == "0-10")    #capa superficial
+prof <- suelo |> filter(profundidad_cm == "10-20")   #capa profunda
+
+#Paleta Okabe-Ito (apta para daltonismo) y tema común a todas las figuras
+col_manejo  <- c("Bueno" = "#009E73", "Deficiente" = "#D55E00")                  #verde/bermellón
+col_textura <- c("Gruesa" = "#E69F00", "Media" = "#CC79A7", "Fina" = "#0072B2")  #arena/intermedia/arcilla
+col_humedad <- c("70 % CRA" = "#56B4E9", "30 % CRA" = "#E69F00")                 #húmedo/seco
+theme_set(theme_minimal(base_size = 13, base_family = "Arial") +
+            theme(plot.title = element_text(face = "bold"),
+                  plot.caption = element_text(colour = "grey40", size = 9),
+                  panel.grid.minor = element_blank()))
+credito <- "Elaboración: @runaweay"   #autoría en cada figura
+
+#Números citados en el texto
+cos_q <- sup |>
+  group_by(quintil_icu) |>
+  summarise(media = mean(cos_pct, na.rm = TRUE),
+            ee    = sd(cos_pct, na.rm = TRUE) / sqrt(sum(!is.na(cos_pct))),
+            .groups = "drop")
+cos_q1 <- round(cos_q$media[cos_q$quintil_icu == "Q1"], 2)
+cos_q5 <- round(cos_q$media[cos_q$quintil_icu == "Q5"], 2)
+caida  <- round(100 * (cos_q1 - cos_q5) / cos_q1)
+```
+
+## Metodología
+
+**Diseño.** `r n_sitios` áreas verdes de Santiago, estratificadas por tipo de cobertura (parque de césped, borde de carretera y bosque urbano), calidad de manejo (bueno y deficiente) y quintil de temperatura superficial de verano (de Q1, el más fresco, a Q5, el más cálido), estimada con imágenes satelitales.
+
+**Variables.** En cada sitio: NDVI y NDMI; compactación (penetrómetro); humedad, temperatura y conductividad eléctrica del suelo (sensor TEROS-12). A 0-10 y 10-20 cm: textura, densidad aparente, fragmentos rocosos, estabilidad de agregados y COS con sus fracciones particulada (COP) y asociada a minerales (COAM). A 0-10 cm: respiración microbiana con MicroResp a 20, 30 y 40 °C y a 30 y 70% CRA.
+
+<!-- Foto: guardar el archivo en imagenes/ y borrar las marcas de comentario.
+![Área verde de Santiago. Foto: Mariana dos Santos Moreno.](imagenes/area_verde.jpg){fig-alt="Describir la foto" width=80%}
+-->
+
+**Datos simulados.** Como el muestreo se hará en primavera-verano 2026-2027, los datos fueron simulados en R con ayuda de Claude (Anthropic) a partir del pedido "puedes ayudarme a crear los datos que necesito, basados en mi proyecto de doctorado? Como aún no hemos ido a terreno, no tengo ningún dato" (traducido del portugués). Se usaron el diseño, las variables y la hipótesis de la tesis, y se incorporaron estos patrones:
+
+- el COS disminuye cerca de 8% por cada quintil más cálido;
+- el buen manejo y el bosque urbano aumentan el COS, y el borde de carretera lo disminuye;
+- los suelos con más arcilla guardan más COS;
+- la respiración se duplica con cada 10 °C (Q~10~ = 2) y es menor con 30% CRA;
+- datos faltantes a propósito: muestras perdidas (MCAR), densidad aparente sin medir con muchos fragmentos rocosos (MAR) y valores fuera del rango del penetrómetro o de la placa MicroResp (MNAR).
+
+Los valores exactos de cada parámetro están en el [diccionario de datos](https://github.com/runaweay/cos_suelos_urbanos_santiago/tree/main/datos).
+
+**Control de calidad.** Antes del análisis, la función `validar_suelos()` (`scripts/funciones.R`) revisa que el tipo de cobertura sea una de las tres del diseño y que el COS (0-15%) y la compactación (0-5 MPa) estén en los rangos esperados:
+
+```{r}
+#| label: validar-datos
+source("scripts/funciones.R")
+datos_ok <- validar_suelos(suelo)
+```
+
+**Análisis.** Las tablas se unieron por sitio y se resumieron con el tidyverse [@wickham2019]; los datos faltantes se exploraron con naniar [@tierney2023]; la figura interactiva usa plotly [@sievert2020]; y los colores siguen la paleta Okabe-Ito, apta para daltonismo [@okabe2008].
+
+## Resultados
+
+### En los sitios más cálidos hay menos carbono
+
+Si el calor favorece la pérdida de carbono, el COS debería bajar de Q1 a Q5.
+
+```{r}
+#| label: fig-cos-quintil
+#| fig-alt: "Puntos del COS de cada sitio por quintil de temperatura, con el promedio de cada quintil bajando de Q1 a Q5."
+#| fig-cap: "COS de 0-10 cm por quintil de temperatura. Puntos grises = sitios; puntos de color = promedio ± IC 95%."
+#| fig-width: 7
+#| fig-height: 4.5
+ggplot(sup, aes(x = quintil_icu, y = cos_pct)) +
+  geom_jitter(width = 0.15, alpha = 0.35, colour = "grey40", na.rm = TRUE) +
+  geom_pointrange(data = cos_q,
+                  aes(x = quintil_icu, y = media,
+                      ymin = media - 1.96 * ee, ymax = media + 1.96 * ee,
+                      colour = quintil_icu),
+                  inherit.aes = FALSE, size = 0.8, linewidth = 1.2) +
+  scale_colour_viridis_d(option = "inferno", begin = 0.15, end = 0.8,
+                         guide = "none") +
+  scale_x_discrete(labels = c("Q1\n(más fresco)", "Q2", "Q3", "Q4",
+                              "Q5\n(más cálido)")) +
+  labs(caption = credito,
+       title = "El carbono disminuye en las zonas más cálidas",
+       x = "Quintil de temperatura superficial de verano",
+       y = "COS 0-10 cm (%)")
+```
+
+Como muestra la @fig-cos-quintil, el COS promedio baja de `r cos_q1`% en los sitios más frescos a `r cos_q5`% en los más cálidos, una caída de alrededor de `r caida`%. Pero en todos los quintiles hay suelos con poco y con mucho carbono, así que la temperatura no lo explica todo.
+
+### El manejo y la cobertura pesan tanto como el calor
+
+Las áreas verdes de Santiago reciben riego, poda y aporte de materia orgánica muy distintos, y eso también cambia cuánto carbono entra al suelo.
+
+::: {.panel-tabset}
+
+#### 0-10 cm
+
+```{r}
+#| label: fig-cos-manejo
+#| fig-alt: "Cajas del COS de 0-10 cm por cobertura; en las tres coberturas, el buen manejo tiene cajas más altas que el manejo deficiente."
+#| fig-cap: "COS de 0-10 cm por cobertura y manejo."
+#| fig-width: 8
+#| fig-height: 4.5
+ggplot(sup, aes(x = cobertura, y = cos_pct, fill = manejo)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.5, na.rm = TRUE) +
+  geom_point(colour = "grey40",
+             position = position_jitterdodge(jitter.width = 0.15,
+                                             dodge.width = 0.75),
+             alpha = 0.5, size = 1.6, na.rm = TRUE) +
+  scale_fill_manual(values = col_manejo) +
+  labs(caption = credito,
+       title = "Un buen manejo se asocia a más carbono en todas las coberturas",
+       x = NULL, y = "COS 0-10 cm (%)",
+       fill = "Calidad de manejo") +
+  theme(legend.position = "top")
+```
+
+#### 10-20 cm
+
+```{r}
+#| label: fig-cos-manejo-prof
+#| fig-alt: "Cajas del COS de 10-20 cm por cobertura; valores más bajos que en superficie, con el mismo patrón por manejo."
+#| fig-cap: "COS de 10-20 cm por cobertura y manejo."
+#| fig-width: 8
+#| fig-height: 4.5
+ggplot(prof, aes(x = cobertura, y = cos_pct, fill = manejo)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.5, na.rm = TRUE) +
+  geom_point(colour = "grey40",
+             position = position_jitterdodge(jitter.width = 0.15,
+                                             dodge.width = 0.75),
+             alpha = 0.5, size = 1.6, na.rm = TRUE) +
+  scale_fill_manual(values = col_manejo) +
+  labs(caption = credito,
+       title = "En profundidad hay menos carbono, pero el patrón se mantiene",
+       x = NULL, y = "COS 10-20 cm (%)",
+       fill = "Calidad de manejo") +
+  theme(legend.position = "top")
+```
+
+:::
+
+En las tres coberturas y en ambas profundidades, los sitios con buen manejo tienen más COS. Los bordes de carretera son los más pobres en carbono, y los bosques urbanos bien manejados, los más ricos.
+
+### La textura del suelo modula la respuesta al calor
+
+La arcilla protege el carbono al asociarlo a los minerales [@cotrufo2022], así que los suelos finos podrían resistir mejor el calor.
+
+```{r}
+#| label: fig-cos-textura
+#| fig-alt: "Tres paneles, uno por textura, con el COS bajando a medida que aumenta la temperatura superficial."
+#| fig-cap: "COS de 0-10 cm y temperatura superficial por textura (regresión lineal ± IC 95%)."
+#| fig-width: 9
+#| fig-height: 5
+#Rangos de los ejes fijados a partir de los datos, para que plotly no corte puntos
+xr <- range(sup$lst_verano_c, na.rm = TRUE) + c(-0.3, 0.3)
+yr <- range(sup$cos_pct, na.rm = TRUE) + c(-0.2, 0.2)
+
+g_textura <- ggplot(sup, aes(x = lst_verano_c, y = cos_pct, colour = textura)) +
+  geom_point(aes(text = paste0(sitio_id, "<br>", cobertura, ", manejo ", tolower(manejo))),
+             alpha = 0.6, na.rm = TRUE) +
+  geom_smooth(aes(fill = textura), method = "lm", alpha = 0.2, na.rm = TRUE) +
+  facet_wrap(~ textura, labeller = labeller(textura = function(x) paste("Textura", tolower(x)))) +
+  scale_colour_manual(values = col_textura, guide = "none") +
+  scale_fill_manual(values = col_textura, guide = "none") +
+  coord_cartesian(xlim = xr, ylim = yr, expand = FALSE) +
+  labs(caption = credito,
+       title = "Los suelos finos tienen más carbono, pero también pierden más con el calor",
+       x = "Temperatura superficial de verano (°C)",
+       y = "COS 0-10 cm (%)")
+
+#Si el informe se renderiza en HTML la figura es interactiva (plotly); si no, queda fija
+if (knitr::is_html_output()) {
+  ggplotly(g_textura, tooltip = c("text", "x", "y")) |>
+    layout(font = list(family = "Arial"),
+           title = list(text = "<b>Los suelos finos tienen más carbono, pero también pierden más con el calor</b>",
+                        font = list(size = 16), x = 0, xref = "paper", xanchor = "left"),
+           margin = list(t = 70, b = 90)) |>
+    #add_annotations() agrega el crédito sin borrar los títulos de los paneles
+    add_annotations(text = credito, x = 1, y = -0.13, xref = "paper", yref = "paper",
+                    xanchor = "right", showarrow = FALSE,
+                    font = list(size = 11, color = "grey40"))
+} else {
+  g_textura
+}
+```
+
+En la @fig-cos-textura (pasa el mouse sobre un punto para ver el sitio), los suelos finos tienen más carbono, pero también la mayor caída con la temperatura. Como hay pocos sitios de textura fina y la banda de confianza es amplia, este patrón debe interpretarse con cautela.
+
+### Los microorganismos respiran más con calor
+
+La respiración microbiana del suelo suele aumentar con la temperatura, con un Q~10~ cercano a 2 [@lloyd1994; @davidson2006], aunque la respuesta depende del agua disponible [@davidson1998; @moyano2013]. Este sería el mecanismo detrás de la @fig-cos-quintil.
+
+```{r}
+#| label: fig-rm
+#| fig-alt: "Líneas de respiración microbiana que suben con la temperatura de incubación, mucho más con 70 % que con 30 % CRA."
+#| fig-cap: "Respiración microbiana (0-10 cm) por temperatura de incubación y humedad. Promedio de los sitios ± IC 95%."
+#| fig-width: 7
+#| fig-height: 4.5
+rm_sitio <- resp |>
+  group_by(sitio_id, temp_incubacion_c, humedad_cra_pct) |>
+  summarise(rm = mean(rm_ug_co2c_g_h, na.rm = TRUE), .groups = "drop") |>
+  filter(is.finite(rm))
+
+rm_resumen <- rm_sitio |>
+  group_by(temp_incubacion_c, humedad_cra_pct) |>
+  summarise(media = mean(rm), ee = sd(rm) / sqrt(n()), .groups = "drop") |>
+  mutate(humedad = factor(paste0(humedad_cra_pct, " % CRA"),
+                          levels = c("70 % CRA", "30 % CRA")))
+
+ggplot(rm_resumen, aes(x = temp_incubacion_c, y = media, colour = humedad)) +
+  geom_line(linewidth = 1) +
+  geom_pointrange(aes(ymin = media - 1.96 * ee, ymax = media + 1.96 * ee),
+                  size = 0.6) +
+  scale_colour_manual(values = col_humedad) +
+  scale_x_continuous(breaks = c(20, 30, 40)) +
+  labs(caption = credito,
+       title = "Si hay agua, el calor dispara la respiración",
+       x = "Temperatura de incubación (°C)",
+       y = expression("Respiración microbiana (µg CO"[2]*"-C g"^-1*" h"^-1*")"),
+       colour = "Humedad") +
+  theme(legend.position = "top")
+
+n_sat <- resp |>
+  filter(temp_incubacion_c == 40, humedad_cra_pct == 70) |>
+  summarise(n = sum(is.na(rm_ug_co2c_g_h))) |>
+  pull(n)
+```
+
+Con 70% CRA la respiración sube fuertemente con la temperatura, y con 30% CRA sube mucho menos (@fig-rm). A 40 °C y 70% CRA, `r n_sat` mediciones saturaron la placa de MicroResp y quedaron como NA (MNAR), así que el promedio de ese tratamiento está subestimado.
+
+## Conclusiones
+
+- En los datos simulados, el COS baja cerca de `r caida`% del quintil más fresco al más cálido.
+- El buen manejo se asocia a más COS en todas las coberturas; los bordes de carretera son los suelos más pobres en carbono.
+- Los suelos finos guardan más carbono, pero su respuesta al calor es incierta por el bajo número de sitios.
+- La respiración microbiana aumenta mucho más con la temperatura cuando hay agua, por lo que el riego podría intensificar la pérdida de carbono en las zonas más cálidas.
+
+Estos resultados muestran los patrones incorporados en la simulación, no hallazgos sobre Santiago. Sirven para dejar listo el flujo de análisis. Los próximos pasos son:
+
+- Ajustar modelos (regresión múltiple o GLM) con temperatura, manejo, cobertura, textura y la interacción temperatura × textura.
+- Agregar un mapa de los sitios cuando estén las coordenadas reales.
+- Reemplazar los datos simulados por los de terreno y laboratorio, con la misma estructura de tablas.
+
+## Referencias
+
+::: {#refs}
+:::
