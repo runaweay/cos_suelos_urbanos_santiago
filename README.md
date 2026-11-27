@@ -149,7 +149,7 @@ Values defined in `scripts/01_simular_datos.R` (SD = standard deviation).
 
 ## Data validation
 
-Before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks the data against this dictionary: unique `sitio_id` per depth, valid `tipo_cobertura` categories and the expected ranges of `cos_pct` (0-15%) and `cone_index_mpa` (0-5 MPa). It runs at the start of the report and is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
+Before each analysis, `validar_suelos()` (`scripts/funciones.R`) checks the data against this dictionary with an unique `sitio_id` per depth, valid `tipo_cobertura` categories and the expected ranges of `cos_pct` (0-15%) and `cone_index_mpa` (0-5 MPa). It runs at the start of the report and is tested with deliberately introduced errors in [activity 10](https://runaweay.github.io/cos_suelos_urbanos_santiago/scripts/04_validacion_diccionario.html).
 
 ## Reproducibility
 
